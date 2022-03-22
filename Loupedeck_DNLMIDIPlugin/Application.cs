@@ -2,9 +2,9 @@ namespace Loupedeck.Loupedeck_DNLMIDIPlugin
 {
 	using System;
 
-	public class Loupedeck_DNLMIDIApplication : ClientApplication
+	public class Application : ClientApplication
 	{
-		public Loupedeck_DNLMIDIApplication() {
+		public Application() {
 
 		}
 

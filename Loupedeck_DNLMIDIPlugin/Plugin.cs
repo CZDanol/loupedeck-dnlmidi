@@ -2,9 +2,10 @@ namespace Loupedeck.Loupedeck_DNLMIDIPlugin
 {
 	using System;
 
-	public class Loupedeck_DNLMIDIPlugin : Plugin
+	public class Plugin : Loupedeck.Plugin
 	{
-
+		public override bool HasNoApplication => true;
+		public override bool UsesApplicationApiOnly => true;
 
 		public override void RunCommand(String commandName, String parameter) {
 		}

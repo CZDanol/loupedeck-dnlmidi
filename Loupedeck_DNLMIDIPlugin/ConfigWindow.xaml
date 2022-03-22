@@ -1,0 +1,23 @@
+﻿<Window x:Class="Loupedeck.Loupedeck_DNLMIDIPlugin.ConfigWindow"
+        xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+        xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+        xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+        xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+        xmlns:local="clr-namespace:Loupedeck.Loupedeck_DNLMIDIPlugin"
+        mc:Ignorable="d"
+        Title="DNL MIDI Config" Height="108.705" Width="387.044">
+    <Grid Margin="10">
+        <Grid.ColumnDefinitions>
+            <ColumnDefinition Width="auto"></ColumnDefinition>
+            <ColumnDefinition Width="*"></ColumnDefinition>
+        </Grid.ColumnDefinitions>
+        <Grid.RowDefinitions>
+            <RowDefinition Height="auto"></RowDefinition>
+            <RowDefinition Height="auto"></RowDefinition>
+        </Grid.RowDefinitions>
+        <Label HorizontalAlignment="Left">MIDI IN device:</Label>
+        <Label HorizontalAlignment="Left"  Grid.Row="1">MIDI OUT device:</Label>
+        <ListBox x:Name="midiIn" VerticalAlignment="Center" Grid.Column="1"/>
+        <ListBox x:Name="midiOut" VerticalAlignment="Center" Grid.Column="1" Grid.Row="1"/>
+    </Grid>
+</Window>
