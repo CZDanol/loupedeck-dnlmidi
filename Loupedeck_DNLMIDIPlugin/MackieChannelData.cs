@@ -6,12 +6,12 @@ using System.Threading.Tasks;
 
 namespace Loupedeck.Loupedeck_DNLMIDIPlugin
 {
-	public class ChannelData
+	public class MackieChannelData
 	{
 
 		public int ChannelID;
-		public int Volume = 0;
-		public ChannelData(int channelID) {
+		public float Volume = 0;
+		public MackieChannelData(int channelID) {
 			ChannelID = channelID;
 		}
 

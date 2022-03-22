@@ -15,43 +15,56 @@ namespace Loupedeck.Loupedeck_DNLMIDIPlugin
 		public OutputDevice midiOut = null;
 
 		public const int ChannelCount = 8;
-		public IDictionary<string, ChannelData> channelData = new Dictionary<string, ChannelData>();
+		public IDictionary<string, MackieChannelData> mackieChannelData = new Dictionary<string, MackieChannelData>();
 
 		string midiInName, midiOutName;
 
-		public event EventHandler<ChannelData> ChannelDataChanged;
+		public event EventHandler<MackieChannelData> ChannelDataChanged;
 
 		public string MidiInName {
 			get => midiInName;
 			set {
+				if (midiIn != null) {
+					midiIn.StopEventsListening();
+					midiIn.Dispose();
+				}
+
 				midiInName = value;
 				midiIn = InputDevice.GetByName(value);
 				midiIn.EventReceived += OnMidiEvent;
 				midiIn.StartEventsListening();
-				SetPluginSetting("midiIn", value);
+				SetPluginSetting("MidiIn", value, false);
 			}
 		}
 
 		public string MidiOutName {
 			get => midiOutName;
 			set {
+				if (midiOut != null) {
+					midiOut.Dispose();
+				}
+
 				midiOutName = value;
 				midiOut = OutputDevice.GetByName(value);
-				SetPluginSetting("midiOut", value);
+				SetPluginSetting("MidiOut", value, false);
 			}
 		}
 
 		public Loupedeck_DNLMIDIPlugin() {
-			for (int i = 0; i < 16; i++)
-				channelData[i.ToString()] = new ChannelData(i);
+			for (int i = 0; i < ChannelCount; i++)
+				mackieChannelData[i.ToString()] = new MackieChannelData(i);
 		}
 
 		public override void Load() {
-			if (TryGetPluginSetting("midiIn", out midiInName))
+			if (TryGetPluginSetting("MidiIn", out var midiInName))
 				MidiInName = midiInName;
+			else
+				MidiInName = "DAW2SD"; // TODO REMOVEME
 
-			if (TryGetPluginSetting("midiOut", out midiOutName))
+			if (TryGetPluginSetting("MidiOut", out var midiOutName))
 				MidiOutName = midiOutName;
+			else
+				MidiOutName = "SD2DAW"; // TODO REMOVEME
 		}
 
 		public void OpenConfigWindow() {
@@ -74,17 +87,13 @@ namespace Loupedeck.Loupedeck_DNLMIDIPlugin
 		private void OnMidiEvent(object sender, MidiEventReceivedEventArgs args) {
 			MidiEvent e = args.Event;
 			if (e is ChannelEvent) {
-				if (!channelData.TryGetValue(((int)(e as ChannelEvent).Channel).ToString(), out ChannelData cd))
+				if (!mackieChannelData.TryGetValue(((int)(e as ChannelEvent).Channel).ToString(), out MackieChannelData cd))
 					return;
 
-				if (e is ControlChangeEvent) {
-					var ce = e as ControlChangeEvent;
-
-					// Volume
-					if (ce.ControlNumber == 7) {
-						cd.Volume = ce.ControlValue;
-						ChannelDataChanged.Invoke(this, cd);
-					}
+				if (e is PitchBendEvent) {
+					var ce = e as PitchBendEvent;
+					cd.Volume = ce.PitchValue / 16383.0f;
+					ChannelDataChanged.Invoke(this, cd);
 				}
 			}
 		}

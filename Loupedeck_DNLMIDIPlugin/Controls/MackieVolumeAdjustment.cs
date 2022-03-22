@@ -22,7 +22,7 @@ namespace Loupedeck.Loupedeck_DNLMIDIPlugin.Controls
 		protected override bool OnLoad() {
 			plugin = base.Plugin as Loupedeck_DNLMIDIPlugin;
 
-			plugin.ChannelDataChanged += (object sender, ChannelData cd) => {
+			plugin.ChannelDataChanged += (object sender, MackieChannelData cd) => {
 				ActionImageChanged(cd.ChannelID.ToString());
 			};
 
@@ -33,12 +33,11 @@ namespace Loupedeck.Loupedeck_DNLMIDIPlugin.Controls
 			if (plugin.midiOut == null)
 				return;
 
-			ChannelData cd = plugin.channelData[actionParameter];
-			cd.Volume = Math.Min(127, Math.Max(0, cd.Volume + diff));
+			MackieChannelData cd = plugin.mackieChannelData[actionParameter];
+			cd.Volume = Math.Min(1, Math.Max(0, cd.Volume + diff * 0.01f));
 
-			var e = new ControlChangeEvent();
-			e.ControlNumber = (SevenBitNumber)7; // Volume
-			e.ControlValue = (SevenBitNumber)cd.Volume;
+			var e = new PitchBendEvent();
+			e.PitchValue = (ushort)(cd.Volume * 65535);
 			e.Channel = (FourBitNumber)cd.ChannelID;
 			plugin.midiOut.SendEvent(e);
 
@@ -49,10 +48,10 @@ namespace Loupedeck.Loupedeck_DNLMIDIPlugin.Controls
 			if (actionParameter == null)
 				return null;
 
-			ChannelData cd = plugin.channelData[actionParameter];
+			MackieChannelData cd = plugin.mackieChannelData[actionParameter];
 
 			var bb = new BitmapBuilder(imageSize);
-			bb.DrawText($"Channel {cd.ChannelID + 1}\n{Math.Round(cd.Volume / 127.0f * 100.0f)} %");
+			bb.DrawText($"Channel {cd.ChannelID + 1}\n{Math.Round(cd.Volume * 100.0f)} %");
 			return bb.ToImage();
 		}
 

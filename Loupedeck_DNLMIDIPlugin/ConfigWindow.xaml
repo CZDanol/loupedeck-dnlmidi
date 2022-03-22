@@ -15,8 +15,8 @@
             <RowDefinition Height="auto"></RowDefinition>
             <RowDefinition Height="auto"></RowDefinition>
         </Grid.RowDefinitions>
-        <Label HorizontalAlignment="Left">MIDI IN device:</Label>
-        <Label HorizontalAlignment="Left"  Grid.Row="1">MIDI OUT device:</Label>
+        <Label HorizontalAlignment="Left">Receive from:</Label>
+        <Label HorizontalAlignment="Left"  Grid.Row="1">Send to:</Label>
         <ComboBox x:Name="midiIn" VerticalAlignment="Center" Grid.Column="1" SelectionChanged="midiIn_SelectionChanged"/>
         <ComboBox x:Name="midiOut" VerticalAlignment="Center" Grid.Column="1" Grid.Row="1" SelectionChanged="midiOut_SelectionChanged"/>
     </Grid>
