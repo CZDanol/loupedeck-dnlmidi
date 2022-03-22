@@ -37,7 +37,7 @@ namespace Loupedeck.Loupedeck_DNLMIDIPlugin.Controls
 			cd.Volume = Math.Min(1, Math.Max(0, cd.Volume + diff * 0.01f));
 
 			var e = new PitchBendEvent();
-			e.PitchValue = (ushort)(cd.Volume * 65535);
+			e.PitchValue = (ushort)(cd.Volume * 16383);
 			e.Channel = (FourBitNumber)cd.ChannelID;
 			plugin.midiOut.SendEvent(e);
 
