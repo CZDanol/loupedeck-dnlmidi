@@ -11,7 +11,11 @@ namespace Loupedeck.Loupedeck_DNLMIDIPlugin
 	/// </summary>
 	public partial class ConfigWindow : Window
 	{
-		public ConfigWindow() {
+		private Loupedeck_DNLMIDIPlugin plugin;
+
+		public ConfigWindow(Loupedeck_DNLMIDIPlugin plugin) {
+			this.plugin = plugin;
+
 			InitializeComponent();
 			UpdateDeviceList();
 		}
@@ -22,6 +26,8 @@ namespace Loupedeck.Loupedeck_DNLMIDIPlugin
 				lst.Items.Clear();
 				foreach (var d in InputDevice.GetAll())
 					lst.Items.Add(d.Name);
+
+				lst.SelectedItem = plugin.MidiInName;
 			}
 
 			{
@@ -29,7 +35,17 @@ namespace Loupedeck.Loupedeck_DNLMIDIPlugin
 				lst.Items.Clear();
 				foreach (var d in OutputDevice.GetAll())
 					lst.Items.Add(d.Name);
+
+				lst.SelectedItem = plugin.MidiOutName;
 			}
+		}
+
+		private void midiIn_SelectionChanged(object sender, System.Windows.Controls.SelectionChangedEventArgs e) {
+			plugin.MidiInName = midiIn.SelectedItem as string;
+		}
+
+		private void midiOut_SelectionChanged(object sender, System.Windows.Controls.SelectionChangedEventArgs e) {
+			plugin.MidiOutName = midiOut.SelectedItem as string;
 		}
 	}
 }

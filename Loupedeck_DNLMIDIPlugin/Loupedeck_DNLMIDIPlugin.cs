@@ -1,6 +1,7 @@
 namespace Loupedeck.Loupedeck_DNLMIDIPlugin
 {
 	using System;
+	using System.Collections.Generic;
 	using System.Threading;
 	using Melanchall.DryWetMidi.Multimedia;
 
@@ -12,13 +13,43 @@ namespace Loupedeck.Loupedeck_DNLMIDIPlugin
 		public InputDevice midiIn = null;
 		public OutputDevice midiOut = null;
 
-		public Loupedeck_DNLMIDIPlugin() {
-			
+		public const int ChannelCount = 8;
+		public IDictionary<string, ChannelData> channelData = new Dictionary<string, ChannelData>();
+
+		string midiInName, midiOutName;
+		
+		public string MidiInName {
+			get => midiInName;
+			set {
+				midiInName = value;
+				midiIn = InputDevice.GetByName(value);
+				SetPluginSetting("midiIn", value);
+			}
 		}
 
-		public void OpenConfigWindow() { 
+		public string MidiOutName {
+			get => midiOutName;
+			set {
+				midiOutName = value;
+				midiOut = OutputDevice.GetByName(value);
+				SetPluginSetting("midiOut", value);
+			}
+		}
+
+		public Loupedeck_DNLMIDIPlugin() {
+			for (int i = 0; i < 16; i++)
+				channelData[i.ToString()] = new ChannelData(i);
+
+			if (TryGetPluginSetting("midiIn", out midiInName))
+				MidiInName = midiInName;
+
+			if (TryGetPluginSetting("midiOut", out midiOutName))
+				MidiOutName = midiOutName;
+		}
+
+		public void OpenConfigWindow() {
 			Thread t = new Thread(() => {
-				ConfigWindow w = new ConfigWindow();
+				ConfigWindow w = new ConfigWindow(this);
 				w.Show();
 				System.Windows.Threading.Dispatcher.Run();
 			});

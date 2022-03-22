@@ -10,11 +10,11 @@ namespace Loupedeck.Loupedeck_DNLMIDIPlugin.Controls
 	class ConfigCommand : PluginDynamicCommand
 	{
 
-		public ConfigCommand() : base("Settings", "Open DNL MIDI settings window", "Control") {
+		public ConfigCommand() : base("DNL MIDI Settings", "Open DNL MIDI settings window", "Control") {
 
 		}
 		protected override void RunCommand(string actionParameter) {
-			((Loupedeck_DNLMIDIPlugin)base.Plugin).OpenConfigWindow();
+			(base.Plugin as Loupedeck_DNLMIDIPlugin).OpenConfigWindow();
 		}
 
 	}

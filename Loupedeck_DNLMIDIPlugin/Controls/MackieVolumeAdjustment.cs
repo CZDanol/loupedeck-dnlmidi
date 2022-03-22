@@ -1,4 +1,6 @@
-﻿using System;
+﻿using Melanchall.DryWetMidi.Common;
+using Melanchall.DryWetMidi.Core;
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
@@ -10,43 +12,35 @@ namespace Loupedeck.Loupedeck_DNLMIDIPlugin.Controls
 	{
 		private Loupedeck_DNLMIDIPlugin plugin = null;
 
-		class ChannelData
-		{
-			public int Channel;
-			public int value = 0;
-
-			public ChannelData(int channel) {
-				Channel = channel;
-			}
-		}
-
-		private IDictionary<string, ChannelData> channelData = new Dictionary<string, ChannelData>();
 
 		public MackieVolumeAdjustment() : base("_", "_", "_", true) {
-			plugin = (Loupedeck_DNLMIDIPlugin)base.Plugin;
+			plugin = base.Plugin as Loupedeck_DNLMIDIPlugin;
 
 			this.Description = "Mackie Control compatible channel fader";
 
-			for (int i = 0; i < 8; i++) {
-				channelData[i.ToString()] = new ChannelData(i);
+			for (int i = 0; i < Loupedeck_DNLMIDIPlugin.ChannelCount; i++)
 				AddParameter(i.ToString(), $"Channel {i + 1} volume", "Mackie Volume");
-			}
 		}
 
-		/*protected override void ApplyAdjustment(string actionParameter, int diff) {
-			ChannelData cd = channelData[actionParameter];
-			cd.value = Math.Min(255, Math.Max(0, cd.value + diff));
+		protected override void ApplyAdjustment(string actionParameter, int diff) {
+			if (plugin.midiOut == null)
+				return;
+
+			ChannelData cd = plugin.channelData[actionParameter];
+			cd.Volume = Math.Min(255, Math.Max(0, cd.Volume + diff));
+
+			plugin.midiOut.SendEvent(new ControlChangeEvent((SevenBitNumber)0, (SevenBitNumber)cd.Volume));
 
 			ActionImageChanged(actionParameter);
 		}
 
 		protected override BitmapImage GetCommandImage(string actionParameter, PluginImageSize imageSize) {
-			ChannelData cd = channelData[actionParameter];
+			ChannelData cd = plugin.channelData[actionParameter];
 
 			var bb = new BitmapBuilder(imageSize);
-			bb.DrawText($"Channel {cd.Channel + 1}\n\u00A0\n{((float)cd.value) / 255} %"); // NBSP on the middle line to prevent coalescing
+			bb.DrawText($"Channel {cd.ChannelID + 1}\n\u00A0\n{((float)cd.Volume) / 255} %"); // NBSP on the middle line to prevent coalescing
 			return bb.ToImage();
-		}*/
+		}
 
 	}
 }
