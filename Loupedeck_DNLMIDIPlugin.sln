@@ -1,0 +1,25 @@
+
+Microsoft Visual Studio Solution File, Format Version 12.00
+# Visual Studio Version 16
+VisualStudioVersion = 16.0.30128.74
+MinimumVisualStudioVersion = 10.0.40219.1
+Project("{CC7EC067-3289-4BCC-BACA-F84FC9199746}") = "Loupedeck_DNLMIDIPlugin", "Loupedeck_DNLMIDIPlugin\Loupedeck_DNLMIDIPlugin.csproj", "{951A9EA6-9BFE-4686-B9DE-04C453C64063}"
+EndProject
+Global
+	GlobalSection(SolutionConfigurationPlatforms) = preSolution
+		Debug|Any CPU = Debug|Any CPU
+		Release|Any CPU = Release|Any CPU
+	EndGlobalSection
+	GlobalSection(ProjectConfigurationPlatforms) = postSolution
+		{951A9EA6-9BFE-4686-B9DE-04C453C64063}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{951A9EA6-9BFE-4686-B9DE-04C453C64063}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{951A9EA6-9BFE-4686-B9DE-04C453C64063}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{951A9EA6-9BFE-4686-B9DE-04C453C64063}.Release|Any CPU.Build.0 = Release|Any CPU
+	EndGlobalSection
+	GlobalSection(SolutionProperties) = preSolution
+		HideSolutionNode = FALSE
+	EndGlobalSection
+	GlobalSection(ExtensibilityGlobals) = postSolution
+		SolutionGuid = {E1127BE2-5083-4956-AF47-E64F9FCC8857}
+	EndGlobalSection
+EndGlobal
