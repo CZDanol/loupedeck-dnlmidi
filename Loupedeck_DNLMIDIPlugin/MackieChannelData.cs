@@ -11,6 +11,7 @@ namespace Loupedeck.Loupedeck_DNLMIDIPlugin
 
 		public int ChannelID;
 		public float Volume = 0;
+
 		public MackieChannelData(int channelID) {
 			ChannelID = channelID;
 		}

@@ -16,7 +16,7 @@ namespace Loupedeck.Loupedeck_DNLMIDIPlugin.Controls
 			this.Description = "Mackie Control compatible channel fader";
 
 			for (int i = 0; i < Loupedeck_DNLMIDIPlugin.ChannelCount; i++)
-				AddParameter(i.ToString(), $"CH{i + 1} volume", "Mackie Volume");
+				AddParameter(i.ToString(), $"Channel {i + 1} volume", "Mackie Volume");
 		}
 
 		protected override bool OnLoad() {
@@ -24,6 +24,9 @@ namespace Loupedeck.Loupedeck_DNLMIDIPlugin.Controls
 
 			plugin.ChannelDataChanged += (object sender, MackieChannelData cd) => {
 				ActionImageChanged(cd.ChannelID.ToString());
+			};
+			plugin.MackieDisplayChanged += (object sender, EventArgs a) => {
+				ActionImageChanged();
 			};
 
 			return true;
@@ -50,8 +53,10 @@ namespace Loupedeck.Loupedeck_DNLMIDIPlugin.Controls
 
 			MackieChannelData cd = plugin.mackieChannelData[actionParameter];
 
+			string str = plugin.MackieDisplayData.Substring(8 * cd.ChannelID);
+
 			var bb = new BitmapBuilder(imageSize);
-			bb.DrawText($"Channel {cd.ChannelID + 1}\n{Math.Round(cd.Volume * 100.0f)} %");
+			bb.DrawText($"{str}\n{Math.Round(cd.Volume * 100.0f)} %");
 			return bb.ToImage();
 		}
 

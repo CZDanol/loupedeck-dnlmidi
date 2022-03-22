@@ -2,6 +2,8 @@ namespace Loupedeck.Loupedeck_DNLMIDIPlugin
 {
 	using System;
 	using System.Collections.Generic;
+	using System.Linq;
+	using System.Text;
 	using System.Threading;
 	using Melanchall.DryWetMidi.Core;
 	using Melanchall.DryWetMidi.Multimedia;
@@ -15,11 +17,14 @@ namespace Loupedeck.Loupedeck_DNLMIDIPlugin
 		public OutputDevice midiOut = null;
 
 		public const int ChannelCount = 8;
+
 		public IDictionary<string, MackieChannelData> mackieChannelData = new Dictionary<string, MackieChannelData>();
+		public string MackieDisplayData = new string(' ', 56 * 2);
 
 		string midiInName, midiOutName;
 
 		public event EventHandler<MackieChannelData> ChannelDataChanged;
+		public event EventHandler MackieDisplayChanged;
 
 		public string MidiInName {
 			get => midiInName;
@@ -94,6 +99,33 @@ namespace Loupedeck.Loupedeck_DNLMIDIPlugin
 					var ce = e as PitchBendEvent;
 					cd.Volume = ce.PitchValue / 16383.0f;
 					ChannelDataChanged.Invoke(this, cd);
+				}
+			}
+
+			else if (e is NormalSysExEvent) {
+				var ce = e as NormalSysExEvent;
+				if (ce.Data.Length < 5)
+					return;
+
+				// Check if this is mackie control command
+				byte[] mackieControlPrefix = { 0x00, 0x00, 0x66 };
+				if (!ce.Data.SubArray(0, mackieControlPrefix.Length).SequenceEqual(mackieControlPrefix))
+					return;
+
+				// LCD command
+				if (ce.Data.Length > 6 && ce.Data[4] == 0x12) {
+					byte offset = ce.Data[5];
+					byte[] str = ce.Data.SubArray(6, ce.Data.Length - 7);
+
+					if (offset + str.Length > MackieDisplayData.Length)
+						return;
+
+					StringBuilder sb = new StringBuilder(MackieDisplayData);
+					for (int i = 0; i < str.Length; i++)
+						sb[i + offset] = (char)str[i];
+
+					MackieDisplayData = sb.ToString();
+					MackieDisplayChanged.Invoke(this, null);
 				}
 			}
 		}
