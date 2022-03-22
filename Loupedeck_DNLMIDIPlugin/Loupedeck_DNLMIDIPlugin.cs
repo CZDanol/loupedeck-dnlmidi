@@ -84,6 +84,10 @@ namespace Loupedeck.Loupedeck_DNLMIDIPlugin
 			t.Start();
 		}
 
+		public void EmitChannelDataChanged(MackieChannelData cd) {
+			ChannelDataChanged.Invoke(this, cd);
+		}
+
 		public override void RunCommand(String commandName, String parameter) {
 		}
 

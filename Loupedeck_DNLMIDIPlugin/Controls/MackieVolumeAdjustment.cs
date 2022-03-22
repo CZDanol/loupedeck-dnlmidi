@@ -46,7 +46,7 @@ namespace Loupedeck.Loupedeck_DNLMIDIPlugin.Controls
 			e.Channel = (FourBitNumber)cd.ChannelID;
 			plugin.midiOut.SendEvent(e);
 
-			ActionImageChanged(actionParameter);
+			plugin.EmitChannelDataChanged(cd);
 		}
 
 		protected override BitmapImage GetCommandImage(string actionParameter, PluginImageSize imageSize) {
