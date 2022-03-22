@@ -5,7 +5,7 @@
         xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
         xmlns:local="clr-namespace:Loupedeck.Loupedeck_DNLMIDIPlugin"
         mc:Ignorable="d"
-        Title="DNL MIDI Config" Height="108.705" Width="387.044">
+        Title="DNL MIDI Config" Height="112" Width="523.333">
     <Grid Margin="10">
         <Grid.ColumnDefinitions>
             <ColumnDefinition Width="auto"></ColumnDefinition>

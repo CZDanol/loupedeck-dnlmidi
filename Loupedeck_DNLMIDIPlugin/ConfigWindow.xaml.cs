@@ -2,8 +2,7 @@
 using System.Collections.Generic;
 using System.Linq;
 using System.Windows;
-using Windows.Devices.Enumeration;
-using Windows.Devices.Midi;
+using Melanchall.DryWetMidi.Multimedia;
 
 namespace Loupedeck.Loupedeck_DNLMIDIPlugin
 {
@@ -14,26 +13,23 @@ namespace Loupedeck.Loupedeck_DNLMIDIPlugin
 	{
 		public ConfigWindow() {
 			InitializeComponent();
+			UpdateDeviceList();
 		}
 
-		private async void UpdateDeviceList() {
-			string inQuery = MidiInPort.GetDeviceSelector();
-			DeviceInformationCollection midiInputDevices = await DeviceInformation.FindAllAsync(midiInputQueryString);
-
-			midiInPortListBox.Items.Clear();
-
-			// Return if no external devices are connected
-			if (midiInputDevices.Count == 0) {
-				this.midiInPortListBox.Items.Add("No MIDI input devices found!");
-				this.midiInPortListBox.IsEnabled = false;
-				return;
+		private void UpdateDeviceList() {
+			{
+				var lst = midiIn;
+				lst.Items.Clear();
+				foreach (var d in InputDevice.GetAll())
+					lst.Items.Add(d.Name);
 			}
 
-			// Else, add each connected input device to the list
-			foreach (DeviceInformation deviceInfo in midiInputDevices) {
-				this.midiInPortListBox.Items.Add(deviceInfo.Name);
+			{
+				var lst = midiOut;
+				lst.Items.Clear();
+				foreach (var d in OutputDevice.GetAll())
+					lst.Items.Add(d.Name);
 			}
-			this.midiInPortListBox.IsEnabled = true;
 		}
 	}
 }
