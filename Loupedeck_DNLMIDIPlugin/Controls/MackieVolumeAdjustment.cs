@@ -53,7 +53,7 @@ namespace Loupedeck.Loupedeck_DNLMIDIPlugin.Controls
 
 			MackieChannelData cd = plugin.mackieChannelData[actionParameter];
 
-			string str = plugin.MackieDisplayData.Substring(8 * cd.ChannelID);
+			string str = plugin.MackieDisplayData.Substring(8 * cd.ChannelID, 8);
 
 			var bb = new BitmapBuilder(imageSize);
 			bb.DrawText($"{str}\n{Math.Round(cd.Volume * 100.0f)} %");
