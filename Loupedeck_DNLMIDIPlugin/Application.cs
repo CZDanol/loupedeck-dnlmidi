@@ -4,12 +4,6 @@ namespace Loupedeck.Loupedeck_DNLMIDIPlugin
 
 	public class Application : ClientApplication
 	{
-		public Application() {
 
-		}
-
-		protected override String GetProcessName() => "";
-
-		protected override String GetBundleName() => "";
 	}
 }

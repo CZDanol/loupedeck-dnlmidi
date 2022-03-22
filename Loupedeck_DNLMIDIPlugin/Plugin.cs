@@ -1,6 +1,7 @@
 namespace Loupedeck.Loupedeck_DNLMIDIPlugin
 {
 	using System;
+	using System.Threading;
 	using Melanchall.DryWetMidi.Multimedia;
 
 	public class Plugin : Loupedeck.Plugin
@@ -8,11 +9,22 @@ namespace Loupedeck.Loupedeck_DNLMIDIPlugin
 		public override bool HasNoApplication => true;
 		public override bool UsesApplicationApiOnly => true;
 
-		public InputDevice midiIn;
-		public OutputDevice midiOut;
+		public InputDevice midiIn = null;
+		public OutputDevice midiOut = null;
 
 		public Plugin() {
 
+		}
+
+		public void OpenConfigWindow() { 
+			Thread t = new Thread(() => {
+				ConfigWindow w = new ConfigWindow();
+				w.Show();
+				System.Windows.Threading.Dispatcher.Run();
+			});
+
+			t.SetApartmentState(ApartmentState.STA);
+			t.Start();
 		}
 
 		public override void RunCommand(String commandName, String parameter) {
@@ -20,5 +32,6 @@ namespace Loupedeck.Loupedeck_DNLMIDIPlugin
 
 		public override void ApplyAdjustment(String adjustmentName, String parameter, Int32 diff) {
 		}
+
 	}
 }

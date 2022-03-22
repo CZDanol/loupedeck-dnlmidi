@@ -14,14 +14,7 @@ namespace Loupedeck.Loupedeck_DNLMIDIPlugin.Commands
 
 		}
 		protected override void RunCommand(string actionParameter) {
-			Thread t = new Thread(() => {
-				ConfigWindow w = new ConfigWindow();
-				w.Show();
-				System.Windows.Threading.Dispatcher.Run();
-			});
-
-			t.SetApartmentState(ApartmentState.STA);
-			t.Start();
+			((Plugin)base.Plugin).OpenConfigWindow();
 		}
 
 	}
