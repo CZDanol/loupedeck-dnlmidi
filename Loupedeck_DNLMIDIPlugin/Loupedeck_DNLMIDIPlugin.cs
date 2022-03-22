@@ -56,7 +56,8 @@ namespace Loupedeck.Loupedeck_DNLMIDIPlugin
 		}
 
 		public Loupedeck_DNLMIDIPlugin() {
-			for (int i = 0; i < ChannelCount; i++)
+			// + 1 - last channel is master
+			for (int i = 0; i < ChannelCount + 1; i++)
 				mackieChannelData[i.ToString()] = new MackieChannelData(i);
 		}
 

@@ -17,6 +17,8 @@ namespace Loupedeck.Loupedeck_DNLMIDIPlugin.Controls
 
 			for (int i = 0; i < Loupedeck_DNLMIDIPlugin.ChannelCount; i++)
 				AddParameter(i.ToString(), $"Channel {i + 1} volume", "Mackie Volume");
+
+			AddParameter(Loupedeck_DNLMIDIPlugin.ChannelCount.ToString(), $"Master volume", "Mackie Volume");
 		}
 
 		protected override bool OnLoad() {
@@ -53,7 +55,7 @@ namespace Loupedeck.Loupedeck_DNLMIDIPlugin.Controls
 
 			MackieChannelData cd = plugin.mackieChannelData[actionParameter];
 
-			string str = plugin.MackieDisplayData.Substring(8 * cd.ChannelID, 8);
+			string str = (cd.ChannelID == Loupedeck_DNLMIDIPlugin.ChannelCount) ? "Master" : plugin.MackieDisplayData.Substring(7 * cd.ChannelID, 7);
 
 			var bb = new BitmapBuilder(imageSize);
 			bb.DrawText($"{str}\n{Math.Round(cd.Volume * 100.0f)} %");
