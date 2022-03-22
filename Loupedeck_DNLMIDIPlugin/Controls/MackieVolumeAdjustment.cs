@@ -4,12 +4,12 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 
-namespace Loupedeck.Loupedeck_DNLMIDIPlugin.Commands
+namespace Loupedeck.Loupedeck_DNLMIDIPlugin
 {
-	class MackieVolumeAdjustment : PluginDynamicAdjustment
+	/*class MackieVolumeAdjustment : PluginDynamicAdjustment
 	{
 
-		Plugin plugin;
+		Loupedeck_DNLMIDIPlugin plugin;
 
 		class ChannelData
 		{
@@ -23,10 +23,8 @@ namespace Loupedeck.Loupedeck_DNLMIDIPlugin.Commands
 
 		private IDictionary<string, ChannelData> channelData = new Dictionary<string, ChannelData>();
 
-		private
-
 		MackieVolumeAdjustment() : base("_", "_", "_", true) {
-			plugin = (Plugin)base.Plugin;
+			plugin = (Loupedeck_DNLMIDIPlugin)base.Plugin;
 
 			this.Description = "Mackie Control compatible channel fader";
 
@@ -51,5 +49,5 @@ namespace Loupedeck.Loupedeck_DNLMIDIPlugin.Commands
 			return bb.ToImage();
 		}
 
-	}
+	}*/
 }

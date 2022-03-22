@@ -5,7 +5,7 @@ using System.Text;
 using System.Threading;
 using System.Threading.Tasks;
 
-namespace Loupedeck.Loupedeck_DNLMIDIPlugin.Commands
+namespace Loupedeck.Loupedeck_DNLMIDIPlugin
 {
 	class ConfigCommand : PluginDynamicCommand
 	{
