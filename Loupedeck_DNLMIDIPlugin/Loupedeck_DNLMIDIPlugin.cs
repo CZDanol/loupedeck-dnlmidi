@@ -4,7 +4,7 @@ namespace Loupedeck.Loupedeck_DNLMIDIPlugin
 	using System.Threading;
 	using Melanchall.DryWetMidi.Multimedia;
 
-	public class Plugin : Loupedeck.Plugin
+	public class Loupedeck_DNLMIDIPlugin : Loupedeck.Plugin
 	{
 		public override bool HasNoApplication => true;
 		public override bool UsesApplicationApiOnly => true;
@@ -12,8 +12,8 @@ namespace Loupedeck.Loupedeck_DNLMIDIPlugin
 		public InputDevice midiIn = null;
 		public OutputDevice midiOut = null;
 
-		public Plugin() {
-
+		public Loupedeck_DNLMIDIPlugin() {
+			
 		}
 
 		public void OpenConfigWindow() { 

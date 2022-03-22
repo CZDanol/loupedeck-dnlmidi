@@ -5,7 +5,7 @@ using System.Text;
 using System.Threading;
 using System.Threading.Tasks;
 
-namespace Loupedeck.Loupedeck_DNLMIDIPlugin
+namespace Loupedeck.Loupedeck_DNLMIDIPlugin.Controls
 {
 	class ConfigCommand : PluginDynamicCommand
 	{
@@ -14,7 +14,7 @@ namespace Loupedeck.Loupedeck_DNLMIDIPlugin
 
 		}
 		protected override void RunCommand(string actionParameter) {
-			((Plugin)base.Plugin).OpenConfigWindow();
+			((Loupedeck_DNLMIDIPlugin)base.Plugin).OpenConfigWindow();
 		}
 
 	}

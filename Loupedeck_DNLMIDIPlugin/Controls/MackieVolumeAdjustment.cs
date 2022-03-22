@@ -4,12 +4,11 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 
-namespace Loupedeck.Loupedeck_DNLMIDIPlugin
+namespace Loupedeck.Loupedeck_DNLMIDIPlugin.Controls
 {
-	/*class MackieVolumeAdjustment : PluginDynamicAdjustment
+	class MackieVolumeAdjustment : PluginDynamicAdjustment
 	{
-
-		Loupedeck_DNLMIDIPlugin plugin;
+		private Loupedeck_DNLMIDIPlugin plugin = null;
 
 		class ChannelData
 		{
@@ -23,7 +22,7 @@ namespace Loupedeck.Loupedeck_DNLMIDIPlugin
 
 		private IDictionary<string, ChannelData> channelData = new Dictionary<string, ChannelData>();
 
-		MackieVolumeAdjustment() : base("_", "_", "_", true) {
+		public MackieVolumeAdjustment() : base("_", "_", "_", true) {
 			plugin = (Loupedeck_DNLMIDIPlugin)base.Plugin;
 
 			this.Description = "Mackie Control compatible channel fader";
@@ -34,7 +33,7 @@ namespace Loupedeck.Loupedeck_DNLMIDIPlugin
 			}
 		}
 
-		protected override void ApplyAdjustment(string actionParameter, int diff) {
+		/*protected override void ApplyAdjustment(string actionParameter, int diff) {
 			ChannelData cd = channelData[actionParameter];
 			cd.value = Math.Min(255, Math.Max(0, cd.value + diff));
 
@@ -47,7 +46,7 @@ namespace Loupedeck.Loupedeck_DNLMIDIPlugin
 			var bb = new BitmapBuilder(imageSize);
 			bb.DrawText($"Channel {cd.Channel + 1}\n\u00A0\n{((float)cd.value) / 255} %"); // NBSP on the middle line to prevent coalescing
 			return bb.ToImage();
-		}
+		}*/
 
-	}*/
+	}
 }
