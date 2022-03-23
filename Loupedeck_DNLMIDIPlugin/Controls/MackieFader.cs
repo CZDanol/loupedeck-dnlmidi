@@ -38,29 +38,16 @@ namespace Loupedeck.Loupedeck_DNLMIDIPlugin.Controls
 			}
 
 			MackieChannelData cd = GetChannel(actionParameter);
+
 			cd.Volume = Math.Min(1, Math.Max(0, (float)Math.Round(cd.Volume * 127 + diff) / 127.0f));
 			cd.EmitVolumeUpdate();
+
 			plugin.MackieSelectedChannel = cd;
 		}
 
-		protected override bool ProcessButtonEvent(string actionParameter, DeviceButtonEvent buttonEvent) {
+		protected override void RunCommand(string actionParameter) {
 			MackieChannelData cd = GetChannel(actionParameter);
-
-			if(buttonEvent.IsPressed) {
-				cd.Volume = 100.0f / 127.0f;
-				cd.EmitVolumeUpdate();
-				plugin.MackieSelectedChannel = cd;
-			}
-
-			return true;
-		}
-
-		protected override bool ProcessTouchEvent(string actionParameter, DeviceTouchEvent touchEvent) {
-			MackieChannelData cd = GetChannel(actionParameter);
-
 			plugin.MackieSelectedChannel = cd;
-
-			return true;
 		}
 
 		protected override BitmapImage GetCommandImage(string actionParameter, PluginImageSize imageSize) {
@@ -72,14 +59,19 @@ namespace Loupedeck.Loupedeck_DNLMIDIPlugin.Controls
 			var bb = new BitmapBuilder(imageSize);
 
 			if (plugin.MackieSelectedChannel == cd)
-				bb.FillRectangle(bb.Width - 4, 0, 4, bb.Height, new BitmapColor(52, 155, 235));
+				bb.FillRectangle(0, 0, 16, 4, ChannelProperty.selectionColor);
 
-			if (cd.Muted)
-				bb.FillRectangle(0, 0, 4, bb.Height, new BitmapColor(255, 0, 0));
-			else if (cd.Solo)
-				bb.FillRectangle(0, 0, 4, bb.Height, new BitmapColor(255, 255, 0));
+			if (cd.Armed)
+				bb.FillRectangle(bb.Width - 16, 0, 16, 4, ChannelProperty.boolPropertyColor[(int)ChannelProperty.BoolType.Arm]);
 
-			bb.DrawText($"{cd.TrackName}\n{Math.Round(cd.Volume * 100.0f)} %");
+			const int muteRectSize = 4;
+			if (cd.Muted || cd.Solo)
+				bb.FillRectangle(
+					0, bb.Height - muteRectSize, bb.Width, muteRectSize,
+					ChannelProperty.boolPropertyColor[cd.Muted ? (int)ChannelProperty.BoolType.Mute : (int)ChannelProperty.BoolType.Solo]
+					);
+
+			bb.DrawText($"{cd.TrackName}\n\u00A0\n{Math.Round(cd.Volume * 100.0f)} %", null, imageSize == PluginImageSize.Width60 ? 12 : 15);
 			return bb.ToImage();
 		}
 

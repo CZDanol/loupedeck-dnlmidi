@@ -181,15 +181,15 @@ namespace Loupedeck.Loupedeck_DNLMIDIPlugin
 			}
 
 			// Note event -> solo/mute/...
-			else if (e is NoteEvent) {
-				var ce = e as NoteEvent;
+			else if (e is NoteOnEvent) {
+				var ce = e as NoteOnEvent;
 
 				// Rec/Arm
 				if (ce.NoteNumber >= 0 && ce.NoteNumber < 8) {
 					if (!mackieChannelData.TryGetValue(ce.NoteNumber.ToString(), out MackieChannelData cd))
 						return;
 
-					cd.Armed = ce.Velocity > 0;
+					cd.BoolProperty[(int)ChannelProperty.BoolType.Arm] = ce.Velocity > 0;
 					MackieChannelDataChanged.Invoke(this, cd);
 				}
 
@@ -198,7 +198,7 @@ namespace Loupedeck.Loupedeck_DNLMIDIPlugin
 					if (!mackieChannelData.TryGetValue((ce.NoteNumber - 8).ToString(), out MackieChannelData cd))
 						return;
 
-					cd.Solo = ce.Velocity > 0;
+					cd.BoolProperty[(int)ChannelProperty.BoolType.Solo] = ce.Velocity > 0;
 					MackieChannelDataChanged.Invoke(this, cd);
 				}
 
@@ -207,7 +207,7 @@ namespace Loupedeck.Loupedeck_DNLMIDIPlugin
 					if (!mackieChannelData.TryGetValue((ce.NoteNumber - 16).ToString(), out MackieChannelData cd))
 						return;
 
-					cd.Muted = ce.Velocity > 0;
+					cd.BoolProperty[(int)ChannelProperty.BoolType.Mute] = ce.Velocity > 0;
 					MackieChannelDataChanged.Invoke(this, cd);
 				}
 			}

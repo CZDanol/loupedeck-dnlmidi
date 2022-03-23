@@ -74,6 +74,8 @@
     <Reference Include="WindowsBase" />
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="ChannelProperty.cs" />
+    <Compile Include="Controls\MackieSelectedChannelBoolPropertyCommand.cs" />
     <Compile Include="MackieChannelData.cs" />
     <Compile Include="ConfigWindow.xaml.cs">
       <DependentUpon>ConfigWindow.xaml</DependentUpon>

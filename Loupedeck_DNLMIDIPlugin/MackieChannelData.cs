@@ -14,13 +14,33 @@ namespace Loupedeck.Loupedeck_DNLMIDIPlugin
 		public int ChannelID;
 		public float Volume = 0;
 		public string TrackName = "";
-		public bool Solo = false;
-		public bool Muted = false;
-		public bool Armed = false;
+
+		public bool[] BoolProperty = new bool[(int)ChannelProperty.BoolType.Count];
 
 		public bool IsMasterChannel = false;
 
 		private Loupedeck_DNLMIDIPlugin plugin;
+
+		public bool Muted {
+			get => BoolProperty[(int)ChannelProperty.BoolType.Mute];
+			set {
+				BoolProperty[(int)ChannelProperty.BoolType.Mute] = value;
+			}
+		}
+
+		public bool Armed {
+			get => BoolProperty[(int)ChannelProperty.BoolType.Arm];
+			set {
+				BoolProperty[(int)ChannelProperty.BoolType.Arm] = value;
+			}
+		}
+
+		public bool Solo {
+			get => BoolProperty[(int)ChannelProperty.BoolType.Solo];
+			set {
+				BoolProperty[(int)ChannelProperty.BoolType.Solo] = value;
+			}
+		}
 
 		public MackieChannelData(Loupedeck_DNLMIDIPlugin plugin, int channelID) {
 			this.plugin = plugin;
@@ -30,6 +50,8 @@ namespace Loupedeck.Loupedeck_DNLMIDIPlugin
 
 			if (IsMasterChannel)
 				TrackName = "Master";
+			else
+				TrackName = $"Channel {channelID + 1}";
 		}
 
 		public void EmitVolumeUpdate() {
