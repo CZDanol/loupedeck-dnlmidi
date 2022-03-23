@@ -6,6 +6,7 @@ namespace Loupedeck.Loupedeck_DNLMIDIPlugin
 	using System.Text;
 	using System.Threading;
 	using System.Threading.Tasks;
+	using System.Timers;
 	using Melanchall.DryWetMidi.Core;
 	using Melanchall.DryWetMidi.Multimedia;
 
@@ -25,7 +26,10 @@ namespace Loupedeck.Loupedeck_DNLMIDIPlugin
 		string midiInName, midiOutName, mackieMidiInName, mackieMidiOutName;
 		MackieChannelData mackieSelectedChannel = null;
 
-		public event EventHandler<MackieChannelData> MackieChannelDataChanged;
+		public event EventHandler MackieDataChanged;
+		public event EventHandler<NoteOnEvent> MackieNoteReceived;
+
+		private System.Timers.Timer mackieDataChangeTimer;
 
 		public string MidiInName {
 			get => midiInName;
@@ -41,7 +45,7 @@ namespace Loupedeck.Loupedeck_DNLMIDIPlugin
 					midiIn.StartEventsListening();
 					SetPluginSetting("MidiIn", value, false);
 				}
-				catch (Exception e) {
+				catch (Exception) {
 					midiIn = null;
 				}
 			}
@@ -59,7 +63,7 @@ namespace Loupedeck.Loupedeck_DNLMIDIPlugin
 					midiOut = OutputDevice.GetByName(value);
 					SetPluginSetting("MidiOut", value, false);
 				}
-				catch (Exception e) {
+				catch (Exception) {
 					midiOut = null;
 				}
 			}
@@ -80,7 +84,7 @@ namespace Loupedeck.Loupedeck_DNLMIDIPlugin
 					mackieMidiIn.StartEventsListening();
 					SetPluginSetting("MackieMidiIn", value, false);
 				}
-				catch (Exception e) {
+				catch (Exception) {
 					mackieMidiIn = null;
 				}
 			}
@@ -98,7 +102,7 @@ namespace Loupedeck.Loupedeck_DNLMIDIPlugin
 					mackieMidiOut = OutputDevice.GetByName(value);
 					SetPluginSetting("MackieMidiOut", value, false);
 				}
-				catch (Exception e) {
+				catch (Exception) {
 					mackieMidiOut = null;
 				}
 			}
@@ -124,6 +128,12 @@ namespace Loupedeck.Loupedeck_DNLMIDIPlugin
 				mackieChannelData[i.ToString()] = new MackieChannelData(this, i);
 
 			mackieSelectedChannel = mackieChannelData["0"];
+
+			mackieDataChangeTimer = new System.Timers.Timer(10);
+			mackieDataChangeTimer.AutoReset = false;
+			mackieDataChangeTimer.Elapsed += (object sender, System.Timers.ElapsedEventArgs e) => {
+				MackieDataChanged.Invoke(this, null);
+			};
 		}
 
 		public override void Load() {
@@ -142,7 +152,7 @@ namespace Loupedeck.Loupedeck_DNLMIDIPlugin
 		}
 
 		public void EmitMackieChannelDataChanged(MackieChannelData cd) {
-			MackieChannelDataChanged.Invoke(this, cd);
+			mackieDataChangeTimer.Start();
 		}
 
 		public override void RunCommand(String commandName, String parameter) {
@@ -177,7 +187,7 @@ namespace Loupedeck.Loupedeck_DNLMIDIPlugin
 
 				var ce = e as PitchBendEvent;
 				cd.Volume = ce.PitchValue / 16383.0f;
-				MackieChannelDataChanged.Invoke(this, cd);
+				EmitMackieChannelDataChanged(cd);
 			}
 
 			// Note event -> solo/mute/...
@@ -190,7 +200,7 @@ namespace Loupedeck.Loupedeck_DNLMIDIPlugin
 						return;
 
 					cd.BoolProperty[(int)ChannelProperty.BoolType.Arm] = ce.Velocity > 0;
-					MackieChannelDataChanged.Invoke(this, cd);
+					EmitMackieChannelDataChanged(cd);
 				}
 
 				// Solo
@@ -199,7 +209,7 @@ namespace Loupedeck.Loupedeck_DNLMIDIPlugin
 						return;
 
 					cd.BoolProperty[(int)ChannelProperty.BoolType.Solo] = ce.Velocity > 0;
-					MackieChannelDataChanged.Invoke(this, cd);
+					EmitMackieChannelDataChanged(cd);
 				}
 
 				// Mute
@@ -208,8 +218,11 @@ namespace Loupedeck.Loupedeck_DNLMIDIPlugin
 						return;
 
 					cd.BoolProperty[(int)ChannelProperty.BoolType.Mute] = ce.Velocity > 0;
-					MackieChannelDataChanged.Invoke(this, cd);
+					EmitMackieChannelDataChanged(cd);
 				}
+
+				else
+					MackieNoteReceived.Invoke(this, ce);
 			}
 
 			else if (e is NormalSysExEvent) {
@@ -239,11 +252,11 @@ namespace Loupedeck.Loupedeck_DNLMIDIPlugin
 					for (int i = 0; i < MackieChannelCount; i++) {
 						MackieChannelData cd = mackieChannelData[i.ToString()];
 						string newTrackName = mackieDisplayData.Substring(7 * i, 7);
-						if (!cd.TrackName.Equals(newTrackName)) {
+						if (!cd.TrackName.Equals(newTrackName))
 							cd.TrackName = newTrackName;
-							MackieChannelDataChanged.Invoke(this, cd);
-						}
 					}
+
+					EmitMackieChannelDataChanged(null);
 				}
 			}
 		}

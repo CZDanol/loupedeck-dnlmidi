@@ -25,7 +25,7 @@ namespace Loupedeck.Loupedeck_DNLMIDIPlugin.Controls
 		protected override bool OnLoad() {
 			plugin = base.Plugin as Loupedeck_DNLMIDIPlugin;
 
-			plugin.MackieChannelDataChanged += (object sender, MackieChannelData cd) => {
+			plugin.MackieDataChanged += (object sender, EventArgs a) => {
 				ActionImageChanged();
 			};
 
@@ -37,9 +37,6 @@ namespace Loupedeck.Loupedeck_DNLMIDIPlugin.Controls
 				return null;
 
 			MackieChannelData cd = GetChannel();
-			if (cd.IsMasterChannel)
-				return null;
-
 			int param = Int32.Parse(actionParameter);
 
 			var bb = new BitmapBuilder(imageSize);
@@ -47,7 +44,11 @@ namespace Loupedeck.Loupedeck_DNLMIDIPlugin.Controls
 			BitmapColor c = ChannelProperty.boolPropertyColor[param];
 			bb.FillRectangle(0, 0, bb.Width, bb.Height, BitmapColor.Black);
 			bb.FillRectangle(0, 0, bb.Width, bb.Height, new BitmapColor(c.R, c.G, c.B, cd.BoolProperty[param] ? 255 : 32));
-			bb.DrawText($"{cd.TrackName}\n{ChannelProperty.boolPropertyName[param]}");
+
+			const int trackNameH = 24;
+			bb.DrawText(cd.TrackName, 0, 0, bb.Width, trackNameH);
+			bb.DrawText(ChannelProperty.boolPropertyLetter[param], 0, trackNameH, bb.Width, bb.Height - trackNameH, null, 32);
+
 			return bb.ToImage();
 		}
 		protected override void RunCommand(string actionParameter) {

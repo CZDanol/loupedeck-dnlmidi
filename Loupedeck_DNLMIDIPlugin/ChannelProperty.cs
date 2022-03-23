@@ -22,13 +22,14 @@ namespace Loupedeck.Loupedeck_DNLMIDIPlugin
 		public static BitmapColor[] boolPropertyColor =
 		{
 			 new BitmapColor(255, 0, 0), // Mute
-			 new BitmapColor(255, 255, 0), // Solo
+			 new BitmapColor(200, 180, 0), // Solo
 			 new BitmapColor(103, 52, 235), // Arm
 		};
 
 		public static int[] boolPropertyMackieNote = { 16, 8, 0 };
 
 		public static string[] boolPropertyName = { "Mute", "Solo", "Rec" };
+		public static string[] boolPropertyLetter = { "M", "S", "R" };
 
 	}
 }

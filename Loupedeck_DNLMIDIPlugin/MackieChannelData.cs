@@ -48,6 +48,10 @@ namespace Loupedeck.Loupedeck_DNLMIDIPlugin
 			ChannelID = channelID;
 			IsMasterChannel = channelID == Loupedeck_DNLMIDIPlugin.MackieChannelCount;
 
+			Muted = false;
+			Armed = false;
+			Solo = false;
+
 			if (IsMasterChannel)
 				TrackName = "Master";
 			else
