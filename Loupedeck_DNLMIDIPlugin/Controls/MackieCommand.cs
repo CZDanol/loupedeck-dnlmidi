@@ -12,15 +12,55 @@ namespace Loupedeck.Loupedeck_DNLMIDIPlugin.Controls
 	{
 		Loupedeck_DNLMIDIPlugin plugin;
 
-		ISet<string> activatedKeys = new HashSet<string>();
+		private class ButtonData
+		{
+			public int Code;
+			public string Name;
+			public string IconName;
+
+			public bool Activated = false;
+
+			public BitmapColor OffColor = BitmapColor.Black;
+			public BitmapColor OnColor = new BitmapColor(0, 57, 148);
+			public BitmapImage Icon;
+		}
+
+		private IDictionary<string, ButtonData> buttonData = new Dictionary<string, ButtonData>();
 
 		public MackieCommand() {
 			string group = "Mackie control";
-			AddParameter("94", "Play", group);
-			AddParameter("93", "Stop", group);
-			AddParameter("95", "Record", group);
-			AddParameter("92", "Fast forward", group);
-			AddParameter("91", "Rewind", group);
+
+			AddButton(new ButtonData
+			{
+				Code = 97,
+				Name = "Play",
+				IconName = "play"
+			});
+			AddButton(new ButtonData
+			{
+				Code = 93,
+				Name = "Stop",
+				IconName = "stop"
+			});
+			AddButton(new ButtonData
+			{
+				Code = 95,
+				Name = "Record",
+				IconName = "record",
+				OnColor = new BitmapColor(128, 0, 0)
+			}); ;
+			AddButton(new ButtonData
+			{
+				Code = 92,
+				Name = "Fast forward",
+				IconName = "fast_forward"
+			});
+			AddButton(new ButtonData
+			{
+				Code = 91,
+				Name = "Rewind",
+				IconName = "rewind"
+			});
 		}
 
 		protected override bool OnLoad() {
@@ -33,11 +73,11 @@ namespace Loupedeck.Loupedeck_DNLMIDIPlugin.Controls
 		protected void OnMackieNoteReceived(object sender, NoteOnEvent e) {
 			string param = e.NoteNumber.ToString();
 
-			if (e.Velocity > 0)
-				activatedKeys.Add(param);
-			else
-				activatedKeys.Remove(param);
+			if (!buttonData.ContainsKey(param))
+				return;
 
+			ButtonData bd = buttonData[param];
+			bd.Activated = e.Velocity > 0;
 			ActionImageChanged(param);
 		}
 
@@ -60,9 +100,20 @@ namespace Loupedeck.Loupedeck_DNLMIDIPlugin.Controls
 		}
 
 		protected override BitmapImage GetCommandImage(string actionParameter, PluginImageSize imageSize) {
+			if (actionParameter == null)
+				return null;
+
+			if (!buttonData.ContainsKey(actionParameter))
+				return null;
+
+			ButtonData bd = buttonData[actionParameter];
+
 			var bb = new BitmapBuilder(imageSize);
-			bb.FillRectangle(0, 0, bb.Width, bb.Height, activatedKeys.Contains(actionParameter) ? new BitmapColor(128, 128, 128) : BitmapColor.Black);
-			bb.DrawText(actionParameter);
+			bb.FillRectangle(0, 0, bb.Width, bb.Height, bd.Activated ? bd.OnColor : bd.OffColor);
+
+			if (bd.Icon != null)
+				bb.DrawImage(bd.Icon);
+
 			return bb.ToImage();
 		}
 
@@ -75,6 +126,14 @@ namespace Loupedeck.Loupedeck_DNLMIDIPlugin.Controls
 			plugin.mackieMidiOut.SendEvent(e);
 
 			ActionImageChanged(actionParameter);
+		}
+
+		private void AddButton(ButtonData bd) {
+			if (bd.IconName != null)
+				bd.Icon = EmbeddedResources.ReadImage(EmbeddedResources.FindFile("${bd.IconName}_64px.png"));
+
+			buttonData[bd.Code.ToString()] = bd;
+			AddParameter(bd.Code.ToString(), bd.Name, "Mackie control");
 		}
 
 	}
