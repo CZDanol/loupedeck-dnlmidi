@@ -17,12 +17,13 @@ namespace Loupedeck.Loupedeck_DNLMIDIPlugin
 		public InputDevice midiIn = null, mackieMidiIn = null;
 		public OutputDevice midiOut = null, mackieMidiOut = null;
 
-		public const int ChannelCount = 8;
+		public const int MackieChannelCount = 8;
 
 		public IDictionary<string, MackieChannelData> mackieChannelData = new Dictionary<string, MackieChannelData>();
 
 		string mackieDisplayData = new string(' ', 56 * 2);
 		string midiInName, midiOutName, mackieMidiInName, mackieMidiOutName;
+		MackieChannelData mackieSelectedChannel = null;
 
 		public event EventHandler<MackieChannelData> MackieChannelDataChanged;
 
@@ -40,7 +41,7 @@ namespace Loupedeck.Loupedeck_DNLMIDIPlugin
 					midiIn.StartEventsListening();
 					SetPluginSetting("MidiIn", value, false);
 				}
-				catch(Exception e) {
+				catch (Exception e) {
 					midiIn = null;
 				}
 			}
@@ -58,7 +59,7 @@ namespace Loupedeck.Loupedeck_DNLMIDIPlugin
 					midiOut = OutputDevice.GetByName(value);
 					SetPluginSetting("MidiOut", value, false);
 				}
-				catch(Exception e) {
+				catch (Exception e) {
 					midiOut = null;
 				}
 			}
@@ -79,7 +80,7 @@ namespace Loupedeck.Loupedeck_DNLMIDIPlugin
 					mackieMidiIn.StartEventsListening();
 					SetPluginSetting("MackieMidiIn", value, false);
 				}
-				catch(Exception e) {
+				catch (Exception e) {
 					mackieMidiIn = null;
 				}
 			}
@@ -97,16 +98,32 @@ namespace Loupedeck.Loupedeck_DNLMIDIPlugin
 					mackieMidiOut = OutputDevice.GetByName(value);
 					SetPluginSetting("MackieMidiOut", value, false);
 				}
-				catch(Exception e) {
+				catch (Exception e) {
 					mackieMidiOut = null;
 				}
 			}
 		}
 
+		public MackieChannelData MackieSelectedChannel {
+			get => mackieSelectedChannel;
+			set {
+				if (mackieSelectedChannel == value)
+					return;
+
+				MackieChannelData old = mackieSelectedChannel;
+				mackieSelectedChannel = value;
+
+				EmitMackieChannelDataChanged(old);
+				EmitMackieChannelDataChanged(value);
+			}
+		}
+
 		public Loupedeck_DNLMIDIPlugin() {
 			// + 1 - last channel is master
-			for (int i = 0; i < ChannelCount + 1; i++)
-				mackieChannelData[i.ToString()] = new MackieChannelData(i);
+			for (int i = 0; i < MackieChannelCount + 1; i++)
+				mackieChannelData[i.ToString()] = new MackieChannelData(this, i);
+
+			mackieSelectedChannel = mackieChannelData["0"];
 		}
 
 		public override void Load() {
@@ -153,13 +170,44 @@ namespace Loupedeck.Loupedeck_DNLMIDIPlugin
 
 		private void OnMackieMidiEvent(object sender, MidiEventReceivedEventArgs args) {
 			MidiEvent e = args.Event;
-			if (e is ChannelEvent) {
+			// PitchBend -> volume
+			if (e is PitchBendEvent) {
 				if (!mackieChannelData.TryGetValue(((int)(e as ChannelEvent).Channel).ToString(), out MackieChannelData cd))
 					return;
 
-				if (e is PitchBendEvent) {
-					var ce = e as PitchBendEvent;
-					cd.Volume = ce.PitchValue / 16383.0f;
+				var ce = e as PitchBendEvent;
+				cd.Volume = ce.PitchValue / 16383.0f;
+				MackieChannelDataChanged.Invoke(this, cd);
+			}
+
+			// Note event -> solo/mute/...
+			else if (e is NoteEvent) {
+				var ce = e as NoteEvent;
+
+				// Rec/Arm
+				if (ce.NoteNumber >= 0 && ce.NoteNumber < 8) {
+					if (!mackieChannelData.TryGetValue(ce.NoteNumber.ToString(), out MackieChannelData cd))
+						return;
+
+					cd.Armed = ce.Velocity > 0;
+					MackieChannelDataChanged.Invoke(this, cd);
+				}
+
+				// Solo
+				else if (ce.NoteNumber >= 8 && ce.NoteNumber < 16) {
+					if (!mackieChannelData.TryGetValue((ce.NoteNumber - 8).ToString(), out MackieChannelData cd))
+						return;
+
+					cd.Solo = ce.Velocity > 0;
+					MackieChannelDataChanged.Invoke(this, cd);
+				}
+
+				// Mute
+				else if (ce.NoteNumber >= 16 && ce.NoteNumber < 32) {
+					if (!mackieChannelData.TryGetValue((ce.NoteNumber - 16).ToString(), out MackieChannelData cd))
+						return;
+
+					cd.Muted = ce.Velocity > 0;
 					MackieChannelDataChanged.Invoke(this, cd);
 				}
 			}
@@ -188,7 +236,7 @@ namespace Loupedeck.Loupedeck_DNLMIDIPlugin
 
 					mackieDisplayData = sb.ToString();
 
-					for (int i = 0; i < ChannelCount; i++) {
+					for (int i = 0; i < MackieChannelCount; i++) {
 						MackieChannelData cd = mackieChannelData[i.ToString()];
 						string newTrackName = mackieDisplayData.Substring(7 * i, 7);
 						if (!cd.TrackName.Equals(newTrackName)) {
