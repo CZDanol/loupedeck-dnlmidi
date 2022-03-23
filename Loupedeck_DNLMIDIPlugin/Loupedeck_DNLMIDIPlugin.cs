@@ -107,7 +107,7 @@ namespace Loupedeck.Loupedeck_DNLMIDIPlugin
 		public MackieChannelData MackieSelectedChannel {
 			get => mackieSelectedChannel;
 			set {
-				if (mackieSelectedChannel == value)
+				if (mackieSelectedChannel == value || value.IsMasterChannel)
 					return;
 
 				MackieChannelData old = mackieSelectedChannel;
