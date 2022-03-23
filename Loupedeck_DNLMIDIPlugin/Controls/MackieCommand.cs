@@ -35,7 +35,7 @@ namespace Loupedeck.Loupedeck_DNLMIDIPlugin.Controls
 				Code = 94,
 				Name = "Play",
 				IconName = "play",
-				OnColor = new BitmapColor(0, 200, 0),
+				OnColor = new BitmapColor(0, 164, 0),
 			});
 			AddButton(new ButtonData
 			{
@@ -127,6 +127,11 @@ namespace Loupedeck.Loupedeck_DNLMIDIPlugin.Controls
 		}
 
 		private void HandlePress(string actionParameter, bool pressed) {
+			if(plugin.mackieMidiOut == null) {
+				plugin.OpenConfigWindow();
+				return;
+			}
+
 			int param = Int32.Parse(actionParameter);
 
 			NoteOnEvent e = new NoteOnEvent();
