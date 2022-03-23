@@ -5,7 +5,9 @@
         xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
         xmlns:local="clr-namespace:Loupedeck.Loupedeck_DNLMIDIPlugin"
         mc:Ignorable="d"
-        Title="DNL MIDI Config" Height="105.333" Width="392.666">
+        Title="DNL MIDI Config"
+        SizeToContent="WidthAndHeight"
+        >
     <Grid Margin="10">
         <Grid.ColumnDefinitions>
             <ColumnDefinition Width="auto"></ColumnDefinition>
@@ -14,10 +16,24 @@
         <Grid.RowDefinitions>
             <RowDefinition Height="auto"></RowDefinition>
             <RowDefinition Height="auto"></RowDefinition>
+            <RowDefinition Height="auto"></RowDefinition>
+            <RowDefinition Height="auto"></RowDefinition>
+            <RowDefinition Height="auto"></RowDefinition>
+            <RowDefinition Height="auto"></RowDefinition>
         </Grid.RowDefinitions>
         <Label HorizontalAlignment="Left">Receive from:</Label>
         <Label HorizontalAlignment="Left"  Grid.Row="1">Send to:</Label>
         <ComboBox x:Name="midiIn" VerticalAlignment="Center" Grid.Column="1" SelectionChanged="midiIn_SelectionChanged"/>
         <ComboBox x:Name="midiOut" VerticalAlignment="Center" Grid.Column="1" Grid.Row="1" SelectionChanged="midiOut_SelectionChanged"/>
+        <Label HorizontalAlignment="Left" Grid.Row="2">Mackie Receive from:</Label>
+        <Label HorizontalAlignment="Left"  Grid.Row="3">Mackie Send to:</Label>
+        <ComboBox x:Name="mackieMidiIn" VerticalAlignment="Center" Grid.Column="1" Grid.Row="2" SelectionChanged="mackieMidiIn_SelectionChanged"/>
+        <ComboBox x:Name="mackieMidiOut" VerticalAlignment="Center" Grid.Column="1" Grid.Row="3" SelectionChanged="mackieMidiOut_SelectionChanged"/>
+        <TextBlock Grid.Row="4" Grid.ColumnSpan="2" TextWrapping="Wrap">
+            For DAW control, usage of internal MIDI loopback software, such as <Hyperlink NavigateUri="https://www.tobias-erichsen.de/software/loopmidi.html">loopMIDI</Hyperlink> is needed.
+        </TextBlock>
+        <TextBlock Grid.Row="5" Grid.ColumnSpan="2" TextWrapping="Wrap">
+            For documentation and support, please visit the plugin <Hyperlink NavigateUri="https://github.com/CZDanol/loupedeck-dnlmidi">Github page</Hyperlink>.
+        </TextBlock>
     </Grid>
 </Window>

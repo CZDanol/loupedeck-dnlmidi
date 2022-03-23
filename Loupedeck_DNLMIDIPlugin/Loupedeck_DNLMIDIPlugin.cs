@@ -5,6 +5,7 @@ namespace Loupedeck.Loupedeck_DNLMIDIPlugin
 	using System.Linq;
 	using System.Text;
 	using System.Threading;
+	using System.Threading.Tasks;
 	using Melanchall.DryWetMidi.Core;
 	using Melanchall.DryWetMidi.Multimedia;
 
@@ -13,18 +14,17 @@ namespace Loupedeck.Loupedeck_DNLMIDIPlugin
 		public override bool HasNoApplication => true;
 		public override bool UsesApplicationApiOnly => true;
 
-		public InputDevice midiIn = null;
-		public OutputDevice midiOut = null;
+		public InputDevice midiIn = null, mackieMidiIn = null;
+		public OutputDevice midiOut = null, mackieMidiOut = null;
 
 		public const int ChannelCount = 8;
 
 		public IDictionary<string, MackieChannelData> mackieChannelData = new Dictionary<string, MackieChannelData>();
-		public string MackieDisplayData = new string(' ', 56 * 2);
 
-		string midiInName, midiOutName;
+		string mackieDisplayData = new string(' ', 56 * 2);
+		string midiInName, midiOutName, mackieMidiInName, mackieMidiOutName;
 
-		public event EventHandler<MackieChannelData> ChannelDataChanged;
-		public event EventHandler MackieDisplayChanged;
+		public event EventHandler<MackieChannelData> MackieChannelDataChanged;
 
 		public string MidiInName {
 			get => midiInName;
@@ -35,10 +35,14 @@ namespace Loupedeck.Loupedeck_DNLMIDIPlugin
 				}
 
 				midiInName = value;
-				midiIn = InputDevice.GetByName(value);
-				midiIn.EventReceived += OnMidiEvent;
-				midiIn.StartEventsListening();
-				SetPluginSetting("MidiIn", value, false);
+				try {
+					midiIn = InputDevice.GetByName(value);
+					midiIn.StartEventsListening();
+					SetPluginSetting("MidiIn", value, false);
+				}
+				catch(Exception e) {
+					midiIn = null;
+				}
 			}
 		}
 
@@ -50,8 +54,52 @@ namespace Loupedeck.Loupedeck_DNLMIDIPlugin
 				}
 
 				midiOutName = value;
-				midiOut = OutputDevice.GetByName(value);
-				SetPluginSetting("MidiOut", value, false);
+				try {
+					midiOut = OutputDevice.GetByName(value);
+					SetPluginSetting("MidiOut", value, false);
+				}
+				catch(Exception e) {
+					midiOut = null;
+				}
+			}
+		}
+
+		public string MackieMidiInName {
+			get => mackieMidiInName;
+			set {
+				if (mackieMidiIn != null) {
+					mackieMidiIn.StopEventsListening();
+					mackieMidiIn.Dispose();
+				}
+
+				mackieMidiInName = value;
+				try {
+					mackieMidiIn = InputDevice.GetByName(value);
+					mackieMidiIn.EventReceived += OnMackieMidiEvent;
+					mackieMidiIn.StartEventsListening();
+					SetPluginSetting("MackieMidiIn", value, false);
+				}
+				catch(Exception e) {
+					mackieMidiIn = null;
+				}
+			}
+		}
+
+		public string MackieMidiOutName {
+			get => mackieMidiOutName;
+			set {
+				if (mackieMidiOut != null) {
+					mackieMidiOut.Dispose();
+				}
+
+				mackieMidiOutName = value;
+				try {
+					mackieMidiOut = OutputDevice.GetByName(value);
+					SetPluginSetting("MackieMidiOut", value, false);
+				}
+				catch(Exception e) {
+					mackieMidiOut = null;
+				}
 			}
 		}
 
@@ -62,15 +110,7 @@ namespace Loupedeck.Loupedeck_DNLMIDIPlugin
 		}
 
 		public override void Load() {
-			if (TryGetPluginSetting("MidiIn", out var midiInName))
-				MidiInName = midiInName;
-			else
-				MidiInName = "DAW2SD"; // TODO REMOVEME
-
-			if (TryGetPluginSetting("MidiOut", out var midiOutName))
-				MidiOutName = midiOutName;
-			else
-				MidiOutName = "SD2DAW"; // TODO REMOVEME
+			LoadSettings();
 		}
 
 		public void OpenConfigWindow() {
@@ -84,8 +124,8 @@ namespace Loupedeck.Loupedeck_DNLMIDIPlugin
 			t.Start();
 		}
 
-		public void EmitChannelDataChanged(MackieChannelData cd) {
-			ChannelDataChanged.Invoke(this, cd);
+		public void EmitMackieChannelDataChanged(MackieChannelData cd) {
+			MackieChannelDataChanged.Invoke(this, cd);
 		}
 
 		public override void RunCommand(String commandName, String parameter) {
@@ -94,7 +134,24 @@ namespace Loupedeck.Loupedeck_DNLMIDIPlugin
 		public override void ApplyAdjustment(String adjustmentName, String parameter, Int32 diff) {
 		}
 
-		private void OnMidiEvent(object sender, MidiEventReceivedEventArgs args) {
+		private async void LoadSettings() {
+			// Workaround - 
+			await Task.Delay(100);
+
+			if (TryGetPluginSetting("MidiIn", out midiInName))
+				MidiInName = midiInName;
+
+			if (TryGetPluginSetting("MackieMidiIn", out mackieMidiInName))
+				MackieMidiInName = mackieMidiInName;
+
+			if (TryGetPluginSetting("MidiOut", out midiOutName))
+				MidiOutName = midiOutName;
+
+			if (TryGetPluginSetting("MackieMidiOut", out mackieMidiOutName))
+				MackieMidiOutName = mackieMidiOutName;
+		}
+
+		private void OnMackieMidiEvent(object sender, MidiEventReceivedEventArgs args) {
 			MidiEvent e = args.Event;
 			if (e is ChannelEvent) {
 				if (!mackieChannelData.TryGetValue(((int)(e as ChannelEvent).Channel).ToString(), out MackieChannelData cd))
@@ -103,7 +160,7 @@ namespace Loupedeck.Loupedeck_DNLMIDIPlugin
 				if (e is PitchBendEvent) {
 					var ce = e as PitchBendEvent;
 					cd.Volume = ce.PitchValue / 16383.0f;
-					ChannelDataChanged.Invoke(this, cd);
+					MackieChannelDataChanged.Invoke(this, cd);
 				}
 			}
 
@@ -122,15 +179,23 @@ namespace Loupedeck.Loupedeck_DNLMIDIPlugin
 					byte offset = ce.Data[5];
 					byte[] str = ce.Data.SubArray(6, ce.Data.Length - 7);
 
-					if (offset + str.Length > MackieDisplayData.Length)
+					if (offset + str.Length > mackieDisplayData.Length)
 						return;
 
-					StringBuilder sb = new StringBuilder(MackieDisplayData);
+					StringBuilder sb = new StringBuilder(mackieDisplayData);
 					for (int i = 0; i < str.Length; i++)
 						sb[i + offset] = (char)str[i];
 
-					MackieDisplayData = sb.ToString();
-					MackieDisplayChanged.Invoke(this, null);
+					mackieDisplayData = sb.ToString();
+
+					for (int i = 0; i < ChannelCount; i++) {
+						MackieChannelData cd = mackieChannelData[i.ToString()];
+						string newTrackName = mackieDisplayData.Substring(7 * i, 7);
+						if (!cd.TrackName.Equals(newTrackName)) {
+							cd.TrackName = newTrackName;
+							MackieChannelDataChanged.Invoke(this, cd);
+						}
+					}
 				}
 			}
 		}

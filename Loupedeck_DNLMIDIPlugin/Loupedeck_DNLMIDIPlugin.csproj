@@ -79,7 +79,7 @@
       <DependentUpon>ConfigWindow.xaml</DependentUpon>
     </Compile>
     <Compile Include="Controls\ConfigCommand.cs" />
-    <Compile Include="Controls\MackieVolumeAdjustment.cs" />
+    <Compile Include="Controls\MackieFader.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="Loupedeck_DNLMIDIApplication.cs" />
     <Compile Include="Loupedeck_DNLMIDIPlugin.cs" />

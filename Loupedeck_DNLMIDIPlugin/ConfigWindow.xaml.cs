@@ -22,21 +22,29 @@ namespace Loupedeck.Loupedeck_DNLMIDIPlugin
 
 		private void UpdateDeviceList() {
 			{
-				var lst = midiIn;
-				lst.Items.Clear();
-				foreach (var d in InputDevice.GetAll())
-					lst.Items.Add(d.Name);
+				midiIn.Items.Clear();
+				mackieMidiIn.Items.Clear();
 
-				lst.SelectedItem = plugin.MidiInName;
+				foreach (var d in InputDevice.GetAll()) {
+					midiIn.Items.Add(d.Name);
+					mackieMidiIn.Items.Add(d.Name);
+				}
+
+				midiIn.SelectedItem = plugin.MidiInName;
+				mackieMidiIn.SelectedItem = plugin.MackieMidiInName;
 			}
 
 			{
-				var lst = midiOut;
-				lst.Items.Clear();
-				foreach (var d in OutputDevice.GetAll())
-					lst.Items.Add(d.Name);
+				midiOut.Items.Clear();
+				mackieMidiOut.Items.Clear();
 
-				lst.SelectedItem = plugin.MidiOutName;
+				foreach (var d in OutputDevice.GetAll()) {
+					midiOut.Items.Add(d.Name);
+					mackieMidiOut.Items.Add(d.Name);
+				}
+
+				midiOut.SelectedItem = plugin.MidiOutName;
+				mackieMidiOut.SelectedItem = plugin.MackieMidiOutName;
 			}
 		}
 
@@ -46,6 +54,14 @@ namespace Loupedeck.Loupedeck_DNLMIDIPlugin
 
 		private void midiOut_SelectionChanged(object sender, System.Windows.Controls.SelectionChangedEventArgs e) {
 			plugin.MidiOutName = midiOut.SelectedItem as string;
+		}
+
+		private void mackieMidiIn_SelectionChanged(object sender, System.Windows.Controls.SelectionChangedEventArgs e) {
+			plugin.MackieMidiInName = mackieMidiIn.SelectedItem as string;
+		}
+
+		private void mackieMidiOut_SelectionChanged(object sender, System.Windows.Controls.SelectionChangedEventArgs e) {
+			plugin.MackieMidiOutName = mackieMidiOut.SelectedItem as string;
 		}
 	}
 }
