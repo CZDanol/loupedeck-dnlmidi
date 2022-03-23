@@ -37,6 +37,9 @@ namespace Loupedeck.Loupedeck_DNLMIDIPlugin.Controls
 				return null;
 
 			MackieChannelData cd = GetChannel();
+			if (cd.IsMasterChannel)
+				return null;
+
 			int param = Int32.Parse(actionParameter);
 
 			var bb = new BitmapBuilder(imageSize);
@@ -54,17 +57,20 @@ namespace Loupedeck.Loupedeck_DNLMIDIPlugin.Controls
 			}
 
 			MackieChannelData cd = GetChannel();
+			if (cd.IsMasterChannel)
+				return;
+
 			int param = Int32.Parse(actionParameter);
 
 			var e = new NoteOnEvent();
 			e.NoteNumber = (SevenBitNumber)(ChannelProperty.boolPropertyMackieNote[param] + cd.ChannelID);
-			e.Velocity = (SevenBitNumber)(!cd.BoolProperty[param] ? 127 : 0);
+			e.Velocity = (SevenBitNumber)(127);
 			plugin.mackieMidiOut.SendEvent(e);
 
-			/*var e2 = new NoteOffEvent();
+			var e2 = new NoteOffEvent();
 			e2.NoteNumber = e.NoteNumber;
 			e2.Velocity = e.Velocity;
-			plugin.mackieMidiOut.SendEvent(e2);*/
+			plugin.mackieMidiOut.SendEvent(e2);
 
 			//plugin.EmitMackieChannelDataChanged(cd);
 		}
