@@ -101,11 +101,12 @@
     </Page>
   </ItemGroup>
   <ItemGroup>
-    <EmbeddedResource Include="Resources\fast_forward_64px.png" />
-    <EmbeddedResource Include="Resources\play_64px.png" />
-    <EmbeddedResource Include="Resources\record_64px.png" />
-    <EmbeddedResource Include="Resources\rewind_64px.png" />
-    <EmbeddedResource Include="Resources\stop_64px.png" />
+    <EmbeddedResource Include="Resources\fast_forward_52px.png" />
+    <EmbeddedResource Include="Resources\play_52px.png" />
+    <EmbeddedResource Include="Resources\record_52px.png" />
+    <EmbeddedResource Include="Resources\repeat_52px.png" />
+    <EmbeddedResource Include="Resources\rewind_52px.png" />
+    <EmbeddedResource Include="Resources\stop_52px.png" />
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
   <Import Project="..\packages\Melanchall.DryWetMidi.6.0.1\build\Melanchall.DryWetMidi.targets" Condition="Exists('..\packages\Melanchall.DryWetMidi.6.0.1\build\Melanchall.DryWetMidi.targets')" />

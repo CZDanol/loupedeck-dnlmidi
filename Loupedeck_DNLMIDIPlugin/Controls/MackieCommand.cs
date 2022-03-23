@@ -21,7 +21,7 @@ namespace Loupedeck.Loupedeck_DNLMIDIPlugin.Controls
 			public bool Activated = false;
 
 			public BitmapColor OffColor = BitmapColor.Black;
-			public BitmapColor OnColor = new BitmapColor(0, 57, 148);
+			public BitmapColor OnColor = new BitmapColor(64, 64, 64);
 			public BitmapImage Icon;
 		}
 
@@ -32,9 +32,10 @@ namespace Loupedeck.Loupedeck_DNLMIDIPlugin.Controls
 
 			AddButton(new ButtonData
 			{
-				Code = 97,
+				Code = 94,
 				Name = "Play",
-				IconName = "play"
+				IconName = "play",
+				OnColor = new BitmapColor(0, 200, 0),
 			});
 			AddButton(new ButtonData
 			{
@@ -60,6 +61,14 @@ namespace Loupedeck.Loupedeck_DNLMIDIPlugin.Controls
 				Code = 91,
 				Name = "Rewind",
 				IconName = "rewind"
+			});
+
+			AddButton(new ButtonData
+			{
+				Code = 86,
+				Name = "Loop",
+				IconName = "repeat",
+				OnColor = new BitmapColor(0, 57, 148),
 			});
 		}
 
@@ -130,7 +139,7 @@ namespace Loupedeck.Loupedeck_DNLMIDIPlugin.Controls
 
 		private void AddButton(ButtonData bd) {
 			if (bd.IconName != null)
-				bd.Icon = EmbeddedResources.ReadImage(EmbeddedResources.FindFile("${bd.IconName}_64px.png"));
+				bd.Icon = EmbeddedResources.ReadImage(EmbeddedResources.FindFile($"{bd.IconName}_52px.png"));
 
 			buttonData[bd.Code.ToString()] = bd;
 			AddParameter(bd.Code.ToString(), bd.Name, "Mackie control");
