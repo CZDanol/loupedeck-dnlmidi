@@ -58,7 +58,7 @@ namespace Loupedeck.Loupedeck_DNLMIDIPlugin.Controls
 
 			var bb = new BitmapBuilder(imageSize);
 
-			if (cd.Muted || cd.Solo)
+			if (!cd.IsMasterChannel && (cd.Muted || cd.Solo))
 				bb.FillRectangle(
 					0, 0, bb.Width, bb.Height,
 					ChannelProperty.boolPropertyColor[cd.Muted ? (int)ChannelProperty.BoolType.Mute : (int)ChannelProperty.BoolType.Solo]
@@ -67,7 +67,7 @@ namespace Loupedeck.Loupedeck_DNLMIDIPlugin.Controls
 			if (plugin.MackieSelectedChannel == cd)
 				bb.FillRectangle(0, 0, 16, 4, ChannelProperty.selectionColor);
 
-			if (cd.Armed)
+			if (!cd.IsMasterChannel && cd.Armed)
 				bb.FillRectangle(bb.Width - 16, 0, 16, 4, ChannelProperty.boolPropertyColor[(int)ChannelProperty.BoolType.Arm]);
 
 			bb.DrawText(cd.TrackName, 0, 0, bb.Width, bb.Height / 2, null, imageSize == PluginImageSize.Width60 ? 12 : 1);
