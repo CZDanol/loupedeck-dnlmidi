@@ -39,7 +39,7 @@ namespace Loupedeck.Loupedeck_DNLMIDIPlugin.Controls
 
 			MackieChannelData cd = GetChannel(actionParameter);
 
-			cd.Volume = Math.Min(1, Math.Max(0, (float)Math.Round(cd.Volume * 127 + diff) / 127.0f));
+			cd.Volume = Math.Min(1, Math.Max(0, (float)Math.Round(cd.Volume * 100 + diff) / 100));
 			cd.EmitVolumeUpdate();
 
 			plugin.MackieSelectedChannel = cd;

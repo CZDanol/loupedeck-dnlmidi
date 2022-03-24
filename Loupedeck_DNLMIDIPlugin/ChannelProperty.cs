@@ -21,8 +21,8 @@ namespace Loupedeck.Loupedeck_DNLMIDIPlugin
 
 		public static BitmapColor[] boolPropertyColor =
 		{
-			 new BitmapColor(255, 0, 0), // Mute
-			 new BitmapColor(200, 180, 0), // Solo
+			 new BitmapColor(200, 0, 0), // Mute
+			 new BitmapColor(122, 88, 23), // Solo
 			 new BitmapColor(103, 52, 235), // Arm
 		};
 
