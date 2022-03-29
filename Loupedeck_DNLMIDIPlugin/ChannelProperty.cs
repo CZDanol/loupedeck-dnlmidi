@@ -6,7 +6,7 @@ using System.Threading.Tasks;
 
 namespace Loupedeck.Loupedeck_DNLMIDIPlugin
 {
-	class ChannelProperty
+	public class ChannelProperty
 	{
 
 		public enum BoolType

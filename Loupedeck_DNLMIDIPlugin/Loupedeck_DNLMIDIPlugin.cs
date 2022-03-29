@@ -7,6 +7,7 @@ namespace Loupedeck.Loupedeck_DNLMIDIPlugin
 	using System.Threading;
 	using System.Threading.Tasks;
 	using System.Timers;
+	using Loupedeck.Loupedeck_DNLMIDIPlugin.Controls;
 	using Melanchall.DryWetMidi.Core;
 	using Melanchall.DryWetMidi.Multimedia;
 
@@ -28,6 +29,8 @@ namespace Loupedeck.Loupedeck_DNLMIDIPlugin
 
 		public event EventHandler MackieDataChanged;
 		public event EventHandler<NoteOnEvent> MackieNoteReceived;
+
+		public MackieFader mackieFader;
 
 		private System.Timers.Timer mackieDataChangeTimer;
 
@@ -123,12 +126,6 @@ namespace Loupedeck.Loupedeck_DNLMIDIPlugin
 		}
 
 		public Loupedeck_DNLMIDIPlugin() {
-			var icon = EmbeddedResources.ReadImage(EmbeddedResources.FindFile("midi_connector_male_96px.png"));
-			this.Info.Icon16x16 = icon;
-			this.Info.Icon32x32 = icon;
-			this.Info.Icon48x48 = icon;
-			this.Info.Icon256x256 = icon;
-
 			// + 1 - last channel is master
 			for (int i = 0; i < MackieChannelCount + 1; i++)
 				mackieChannelData[i.ToString()] = new MackieChannelData(this, i);
@@ -143,6 +140,11 @@ namespace Loupedeck.Loupedeck_DNLMIDIPlugin
 		}
 
 		public override void Load() {
+			this.Info.Icon16x16 = EmbeddedResources.ReadImage(EmbeddedResources.FindFile("midi_connector_male_16px.png"));
+			this.Info.Icon32x32 = EmbeddedResources.ReadImage(EmbeddedResources.FindFile("midi_connector_male_32px.png"));
+			this.Info.Icon48x48 = EmbeddedResources.ReadImage(EmbeddedResources.FindFile("midi_connector_male_48px.png"));
+			this.Info.Icon256x256 = EmbeddedResources.ReadImage(EmbeddedResources.FindFile("midi_connector_male_96px.png"));
+
 			LoadSettings();
 		}
 
@@ -265,6 +267,13 @@ namespace Loupedeck.Loupedeck_DNLMIDIPlugin
 					EmitMackieChannelDataChanged(null);
 				}
 			}
+		}
+
+		public override bool TryProcessTouchEvent(string actionName, string actionParameter, DeviceTouchEvent deviceTouchEvent) {
+			if (actionName == mackieFader.GetResetActionName())
+				return mackieFader.TryProcessTouchEvent(actionParameter, deviceTouchEvent);
+
+			return base.TryProcessTouchEvent(actionName, actionParameter, deviceTouchEvent);
 		}
 
 	}

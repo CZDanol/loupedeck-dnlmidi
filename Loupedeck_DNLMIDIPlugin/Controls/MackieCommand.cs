@@ -28,8 +28,6 @@ namespace Loupedeck.Loupedeck_DNLMIDIPlugin.Controls
 		private IDictionary<string, ButtonData> buttonData = new Dictionary<string, ButtonData>();
 
 		public MackieCommand() {
-			string group = "Mackie control";
-
 			AddButton(new ButtonData
 			{
 				Code = 94,

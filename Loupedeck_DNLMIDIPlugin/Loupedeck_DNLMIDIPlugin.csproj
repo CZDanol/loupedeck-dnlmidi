@@ -76,7 +76,7 @@
   <ItemGroup>
     <Compile Include="ChannelProperty.cs" />
     <Compile Include="Controls\MackieCommand.cs" />
-    <Compile Include="Controls\MackieSelectedChannelBoolPropertyCommand.cs" />
+    <Compile Include="Controls\MackieBoolPropertyCommand.cs" />
     <Compile Include="MackieChannelData.cs" />
     <Compile Include="ConfigWindow.xaml.cs">
       <DependentUpon>ConfigWindow.xaml</DependentUpon>
@@ -110,6 +110,11 @@
   </ItemGroup>
   <ItemGroup>
     <EmbeddedResource Include="Resources\midi_connector_male_96px.png" />
+  </ItemGroup>
+  <ItemGroup>
+    <EmbeddedResource Include="Resources\midi_connector_male_16px.png" />
+    <EmbeddedResource Include="Resources\midi_connector_male_32px.png" />
+    <EmbeddedResource Include="Resources\midi_connector_male_48px.png" />
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
   <Import Project="..\packages\Melanchall.DryWetMidi.6.0.1\build\Melanchall.DryWetMidi.targets" Condition="Exists('..\packages\Melanchall.DryWetMidi.6.0.1\build\Melanchall.DryWetMidi.targets')" />

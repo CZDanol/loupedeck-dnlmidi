@@ -9,8 +9,7 @@ A plugin for Loupedeck for MIDI support:
 * Uses Icons8.
 
 ## TODO
-* Per channel solo/mute/arm
-* Per channel command with touch gestures etc
+* Fader for selected channel
 * Time/position display
 * Standard MIDI button
 * Standard MIDI adjustment?

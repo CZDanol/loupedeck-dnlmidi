@@ -16,10 +16,14 @@ namespace Loupedeck.Loupedeck_DNLMIDIPlugin.Controls
 		public MackieSelectedChannelBoolPropertyCommand() {
 			this.Description = "Control for currently selected Mackie channel";
 
-			string group = "Mackie selected channel";
-			AddParameter(((int)ChannelProperty.BoolType.Mute).ToString(), "Mute", group);
-			AddParameter(((int)ChannelProperty.BoolType.Solo).ToString(), "Solo ", group);
-			AddParameter(((int)ChannelProperty.BoolType.Arm).ToString(), "Arm/rec", group);
+			for (int i = 0; i < Loupedeck_DNLMIDIPlugin.MackieChannelCount + 1; i++) {
+				string prefix = $"{i}:";
+				string chstr = i == Loupedeck_DNLMIDIPlugin.MackieChannelCount ? " (Selected channel)" : $" (CH {i + 1})";
+
+				AddParameter(prefix + ((int)ChannelProperty.BoolType.Mute).ToString(), "Mute" + chstr, "Mackie mute");
+				AddParameter(prefix + ((int)ChannelProperty.BoolType.Solo).ToString(), "Solo " + chstr, "Mackie solo");
+				AddParameter(prefix + ((int)ChannelProperty.BoolType.Arm).ToString(), "Arm/rec" + chstr, "Mackie arm/rec");
+			}
 		}
 
 		protected override bool OnLoad() {
@@ -36,8 +40,9 @@ namespace Loupedeck.Loupedeck_DNLMIDIPlugin.Controls
 			if (actionParameter == null)
 				return null;
 
-			MackieChannelData cd = GetChannel();
-			int param = Int32.Parse(actionParameter);
+			ParamData pd = GetParamData(actionParameter);
+			MackieChannelData cd = pd.channelData;
+			int param = pd.param;
 
 			var bb = new BitmapBuilder(imageSize);
 
@@ -57,27 +62,29 @@ namespace Loupedeck.Loupedeck_DNLMIDIPlugin.Controls
 				return;
 			}
 
-			MackieChannelData cd = GetChannel();
+			ParamData pd = GetParamData(actionParameter);
+			MackieChannelData cd = pd.channelData;
+			int param = pd.param;
+
 			if (cd.IsMasterChannel)
 				return;
 
-			int param = Int32.Parse(actionParameter);
-
-			var e = new NoteOnEvent();
-			e.NoteNumber = (SevenBitNumber)(ChannelProperty.boolPropertyMackieNote[param] + cd.ChannelID);
-			e.Velocity = (SevenBitNumber)(127);
-			plugin.mackieMidiOut.SendEvent(e);
-
-			var e2 = new NoteOffEvent();
-			e2.NoteNumber = e.NoteNumber;
-			e2.Velocity = e.Velocity;
-			plugin.mackieMidiOut.SendEvent(e2);
-
-			//plugin.EmitMackieChannelDataChanged(cd);
+			cd.EmitBoolPropertyPress((ChannelProperty.BoolType)param);
 		}
 
-		private MackieChannelData GetChannel() {
-			return plugin.MackieSelectedChannel;
+		private ParamData GetParamData(string actionParameter) {
+			var dt = actionParameter.Split(':');
+			return new ParamData
+			{
+				param = Int32.Parse(dt[1]),
+				channelData = (dt[0] == Loupedeck_DNLMIDIPlugin.MackieChannelCount.ToString()) ? plugin.MackieSelectedChannel : plugin.mackieChannelData[dt[0]]
+			};
+		}
+
+		private class ParamData
+		{
+			public int param;
+			public MackieChannelData channelData;
 		}
 
 	}

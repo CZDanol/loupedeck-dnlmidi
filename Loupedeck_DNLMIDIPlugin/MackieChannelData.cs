@@ -63,5 +63,17 @@ namespace Loupedeck.Loupedeck_DNLMIDIPlugin
 			plugin.EmitMackieChannelDataChanged(this);
 		}
 
+		public void EmitBoolPropertyPress(ChannelProperty.BoolType type) {
+			var e = new NoteOnEvent();
+			e.NoteNumber = (SevenBitNumber)(ChannelProperty.boolPropertyMackieNote[(int)type] + ChannelID);
+			e.Velocity = (SevenBitNumber)(127);
+			plugin.mackieMidiOut.SendEvent(e);
+
+			var e2 = new NoteOffEvent();
+			e2.NoteNumber = e.NoteNumber;
+			e2.Velocity = e.Velocity;
+			plugin.mackieMidiOut.SendEvent(e2);
+		}
+
 	}
 }

@@ -8,21 +8,22 @@ using System.Threading.Tasks;
 
 namespace Loupedeck.Loupedeck_DNLMIDIPlugin.Controls
 {
-	class MackieFader : PluginDynamicAdjustment
+	public class MackieFader : PluginDynamicAdjustment
 	{
 		private Loupedeck_DNLMIDIPlugin plugin = null;
 
 		public MackieFader() : base(true) {
-			this.Description = "Mackie Control compatible channel fader";
+			this.Description = "Mackie Control compatible channel fader.\nButton press -> Mute\nScreen touch -> Select\nScreen double tap -> Arm/rec";
 
 			for (int i = 0; i < Loupedeck_DNLMIDIPlugin.MackieChannelCount; i++)
-				AddParameter(i.ToString(), $"Mackie fader (CH {i + 1})", "Mackie faders");
+				AddParameter(i.ToString(), $"Fader (CH {i + 1})", "Mackie faders");
 
 			AddParameter(Loupedeck_DNLMIDIPlugin.MackieChannelCount.ToString(), $"Mackie master fader", "Mackie faders");
 		}
 
 		protected override bool OnLoad() {
 			plugin = base.Plugin as Loupedeck_DNLMIDIPlugin;
+			plugin.mackieFader = this;
 
 			plugin.MackieDataChanged += (object sender, EventArgs e) => {
 				ActionImageChanged();
@@ -48,6 +49,7 @@ namespace Loupedeck.Loupedeck_DNLMIDIPlugin.Controls
 		protected override void RunCommand(string actionParameter) {
 			MackieChannelData cd = GetChannel(actionParameter);
 			plugin.MackieSelectedChannel = cd;
+			cd.EmitBoolPropertyPress(ChannelProperty.BoolType.Mute);
 		}
 
 		protected override BitmapImage GetCommandImage(string actionParameter, PluginImageSize imageSize) {
@@ -77,6 +79,16 @@ namespace Loupedeck.Loupedeck_DNLMIDIPlugin.Controls
 
 		private MackieChannelData GetChannel(string actionParameter) {
 			return plugin.mackieChannelData[actionParameter];
+		}
+
+		protected override bool ProcessTouchEvent(string actionParameter, DeviceTouchEvent touchEvent) {
+			MackieChannelData cd = GetChannel(actionParameter);
+			plugin.MackieSelectedChannel = cd;
+
+			if (touchEvent.EventType == DeviceTouchEventType.DoubleTap)
+				cd.EmitBoolPropertyPress(ChannelProperty.BoolType.Arm);
+
+			return true;
 		}
 	}
 }
