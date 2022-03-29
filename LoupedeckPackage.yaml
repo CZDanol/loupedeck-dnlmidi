@@ -2,8 +2,8 @@
 name: 'Loupedeck_DNLMIDI'
 displayName: 'Loupedeck_DNLMIDI'
 version: 1.0.0
-author: XeroxDev
-copyright: Copyright (c) 2021 Dominic Ris
+author: Danol
+copyright: (c) 2022 Danol
 
 supportedDevices:
   - LoupedeckCt

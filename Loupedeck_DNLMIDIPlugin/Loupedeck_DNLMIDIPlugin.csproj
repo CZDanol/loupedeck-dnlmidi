@@ -108,6 +108,9 @@
     <EmbeddedResource Include="Resources\rewind_52px.png" />
     <EmbeddedResource Include="Resources\stop_52px.png" />
   </ItemGroup>
+  <ItemGroup>
+    <EmbeddedResource Include="Resources\midi_connector_male_96px.png" />
+  </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
   <Import Project="..\packages\Melanchall.DryWetMidi.6.0.1\build\Melanchall.DryWetMidi.targets" Condition="Exists('..\packages\Melanchall.DryWetMidi.6.0.1\build\Melanchall.DryWetMidi.targets')" />
   <Target Name="EnsureNuGetPackageBuildImports" BeforeTargets="PrepareForBuild">

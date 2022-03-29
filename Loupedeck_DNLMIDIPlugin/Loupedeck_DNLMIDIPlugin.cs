@@ -123,6 +123,12 @@ namespace Loupedeck.Loupedeck_DNLMIDIPlugin
 		}
 
 		public Loupedeck_DNLMIDIPlugin() {
+			var icon = EmbeddedResources.ReadImage(EmbeddedResources.FindFile("midi_connector_male_96px.png"));
+			this.Info.Icon16x16 = icon;
+			this.Info.Icon32x32 = icon;
+			this.Info.Icon48x48 = icon;
+			this.Info.Icon256x256 = icon;
+
 			// + 1 - last channel is master
 			for (int i = 0; i < MackieChannelCount + 1; i++)
 				mackieChannelData[i.ToString()] = new MackieChannelData(this, i);
