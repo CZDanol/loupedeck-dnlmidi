@@ -32,6 +32,8 @@ namespace Loupedeck.Loupedeck_DNLMIDIPlugin
 
 		public MackieFader mackieFader;
 
+		public bool isConfigWindowOpen = false;
+
 		private System.Timers.Timer mackieDataChangeTimer;
 
 		public string MidiInName {
@@ -149,14 +151,20 @@ namespace Loupedeck.Loupedeck_DNLMIDIPlugin
 		}
 
 		public void OpenConfigWindow() {
+			if (isConfigWindowOpen)
+				return;
+
 			Thread t = new Thread(() => {
 				ConfigWindow w = new ConfigWindow(this);
+				w.Closed += (_, _) => isConfigWindowOpen = false;
 				w.Show();
 				System.Windows.Threading.Dispatcher.Run();
 			});
 
 			t.SetApartmentState(ApartmentState.STA);
 			t.Start();
+
+			isConfigWindowOpen = true;
 		}
 
 		public void EmitMackieChannelDataChanged(MackieChannelData cd) {
