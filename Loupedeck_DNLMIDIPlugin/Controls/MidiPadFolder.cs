@@ -33,7 +33,7 @@ namespace Loupedeck.Loupedeck_DNLMIDIPlugin.Controls
 		PadLayout currentLayout;
 		int currentLayoutIx = 0;
 
-		int octaveShift = 0;
+		int transpose = 0;
 
 		class Adjustment
 		{
@@ -66,7 +66,7 @@ namespace Loupedeck.Loupedeck_DNLMIDIPlugin.Controls
 			{
 				PadLayout lt = new PadLayout();
 				lt.Name = "Halft";
-				lt.NoteNumber = (CommandParams p) => C1MidiCode + p.ix + octaveShift;
+				lt.NoteNumber = (CommandParams p) => C1MidiCode + p.ix + transpose;
 				layouts.Add(lt);
 			}
 
@@ -75,7 +75,7 @@ namespace Loupedeck.Loupedeck_DNLMIDIPlugin.Controls
 
 				PadLayout lt = new PadLayout();
 				lt.Name = "Hepta";
-				lt.NoteNumber = (CommandParams p) => C1MidiCode + nums[p.ix % nums.Length] + (p.ix / nums.Length) * 12 + octaveShift;
+				lt.NoteNumber = (CommandParams p) => C1MidiCode + nums[p.ix % nums.Length] + (p.ix / nums.Length) * 12 + transpose;
 				layouts.Add(lt);
 			}
 
@@ -84,7 +84,7 @@ namespace Loupedeck.Loupedeck_DNLMIDIPlugin.Controls
 
 				PadLayout lt = new PadLayout();
 				lt.Name = "Penta";
-				lt.NoteNumber = (CommandParams p) => C1MidiCode + nums[p.ix % nums.Length] + (p.ix / nums.Length) * 12 + octaveShift;
+				lt.NoteNumber = (CommandParams p) => C1MidiCode + nums[p.ix % nums.Length] + (p.ix / nums.Length) * 12 + transpose;
 				layouts.Add(lt);
 			}
 
@@ -156,7 +156,7 @@ namespace Loupedeck.Loupedeck_DNLMIDIPlugin.Controls
 			lst.Add(CreateAdjustmentName("layout"));
 			lst.Add(CreateAdjustmentName("hAdj"));
 			lst.Add(CreateAdjustmentName("vAdj"));
-			lst.Add(CreateAdjustmentName("oct"));
+			lst.Add(CreateAdjustmentName("trans"));
 
 			return lst;
 		}
@@ -169,10 +169,10 @@ namespace Loupedeck.Loupedeck_DNLMIDIPlugin.Controls
 				return "<>\n" + currentHorizontalAdjustment.Name;
 
 			else if (actionParameter == "vAdj")
-				return "/\\ \\/\n" + currentVerticalAdjustment.Name;
+				return "/\\/\n" + currentVerticalAdjustment.Name;
 
-			else if (actionParameter == "oct")
-				return "Octave\n" + (octaveShift > 0 ? "+" : "") + octaveShift.ToString();
+			else if (actionParameter == "trans")
+				return "Trans\n" + (transpose > 0 ? "+" : "") + transpose.ToString();
 
 			return null;
 		}
@@ -276,10 +276,11 @@ namespace Loupedeck.Loupedeck_DNLMIDIPlugin.Controls
 				currentVerticalAdjustment = adjustments[currentVerticalAdjustmentIx];
 				AdjustmentImageChanged("vAdj");
 			}
-			else if(actionParameter == "oct") {
-				octaveShift += encoderEvent.Clicks;
+			else if(actionParameter == "trans") {
+				transpose += encoderEvent.Clicks;
+				transpose = Math.Min(12 * 4, Math.Max(-12 * 2, transpose));
 				CommandImageChanged(null);
-				AdjustmentImageChanged("oct");
+				AdjustmentImageChanged("trans");
 			}
 
 			return base.ProcessEncoderEvent(actionParameter, encoderEvent);
