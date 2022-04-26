@@ -77,6 +77,7 @@
     <Compile Include="ChannelProperty.cs" />
     <Compile Include="Controls\MackieCommand.cs" />
     <Compile Include="Controls\MackieBoolPropertyCommand.cs" />
+    <Compile Include="Controls\MidiPadFolder.cs" />
     <Compile Include="MackieChannelData.cs" />
     <Compile Include="ConfigWindow.xaml.cs">
       <DependentUpon>ConfigWindow.xaml</DependentUpon>
