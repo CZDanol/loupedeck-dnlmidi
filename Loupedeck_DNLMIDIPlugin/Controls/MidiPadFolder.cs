@@ -33,6 +33,8 @@ namespace Loupedeck.Loupedeck_DNLMIDIPlugin.Controls
 		PadLayout currentLayout;
 		int currentLayoutIx = 0;
 
+		int octaveShift = 0;
+
 		class Adjustment
 		{
 			public string Name;
@@ -63,8 +65,8 @@ namespace Loupedeck.Loupedeck_DNLMIDIPlugin.Controls
 
 			{
 				PadLayout lt = new PadLayout();
-				lt.Name = "Halftone";
-				lt.NoteNumber = (CommandParams p) => C1MidiCode + p.ix;
+				lt.Name = "Halft";
+				lt.NoteNumber = (CommandParams p) => C1MidiCode + p.ix + octaveShift;
 				layouts.Add(lt);
 			}
 
@@ -72,8 +74,8 @@ namespace Loupedeck.Loupedeck_DNLMIDIPlugin.Controls
 				int[] nums = { 0, 2, 4, 5, 7, 9, 11 };
 
 				PadLayout lt = new PadLayout();
-				lt.Name = "Heptatonic";
-				lt.NoteNumber = (CommandParams p) => C1MidiCode + nums[p.ix % nums.Length] + (p.ix / nums.Length) * 12;
+				lt.Name = "Hepta";
+				lt.NoteNumber = (CommandParams p) => C1MidiCode + nums[p.ix % nums.Length] + (p.ix / nums.Length) * 12 + octaveShift;
 				layouts.Add(lt);
 			}
 
@@ -81,9 +83,23 @@ namespace Loupedeck.Loupedeck_DNLMIDIPlugin.Controls
 				int[] nums = { 0, 2, 4, 7, 9 };
 
 				PadLayout lt = new PadLayout();
-				lt.Name = "Pentatonic";
-				lt.NoteNumber = (CommandParams p) => C1MidiCode + nums[p.ix % nums.Length] + (p.ix / nums.Length) * 12;
+				lt.Name = "Penta";
+				lt.NoteNumber = (CommandParams p) => C1MidiCode + nums[p.ix % nums.Length] + (p.ix / nums.Length) * 12 + octaveShift;
 				layouts.Add(lt);
+			}
+
+			{
+				Adjustment adj = new Adjustment();
+				adj.Name = "Mod";
+				adj.Adjust = (int delta) => {
+					adj.value += delta;
+
+					var e = new ControlChangeEvent();
+					e.ControlNumber = (SevenBitNumber)1; // Moduleation wheel
+					e.ControlValue = (SevenBitNumber)Math.Max(0, Math.Min(adj.value * 10, 127));
+					plugin.midiOut.SendEvent(e);
+				};
+				adjustments.Add(adj);
 			}
 
 			{
@@ -92,7 +108,7 @@ namespace Loupedeck.Loupedeck_DNLMIDIPlugin.Controls
 				adj.Adjust = (int delta) => {
 					var e = new PitchBendEvent();
 					adj.value += delta;
-					e.PitchValue = (ushort)(Math.Max(0, Math.Min(8192 + adj.value * 100, 16383)));
+					e.PitchValue = (ushort)(Math.Max(0, Math.Min(8192 + adj.value * 500, 16383)));
 					plugin.midiOut.SendEvent(e);
 				};
 				// Reset the pitch bend after release
@@ -108,15 +124,7 @@ namespace Loupedeck.Loupedeck_DNLMIDIPlugin.Controls
 
 			{
 				Adjustment adj = new Adjustment();
-				adj.Name = "Modulation";
-				adj.Adjust = (int delta) => {
-					adj.value += delta;
-
-					var e = new ControlChangeEvent();
-					e.ControlNumber = (SevenBitNumber)1; // Moduleation wheel
-					e.ControlValue = (SevenBitNumber)Math.Max(0, Math.Min(adj.value, 127));
-					plugin.midiOut.SendEvent(e);
-				};
+				adj.Name = "None";
 				adjustments.Add(adj);
 			}
 
@@ -139,22 +147,32 @@ namespace Loupedeck.Loupedeck_DNLMIDIPlugin.Controls
 			for (int i = 0; i < 12; i++)
 				lst.Add(CreateCommandName(i.ToString()));
 
+			return lst;
+		}
+
+		public override IEnumerable<string> GetEncoderRotateActionNames() {
+			var lst = new List<string>();
+
 			lst.Add(CreateAdjustmentName("layout"));
 			lst.Add(CreateAdjustmentName("hAdj"));
 			lst.Add(CreateAdjustmentName("vAdj"));
+			lst.Add(CreateAdjustmentName("oct"));
 
 			return lst;
 		}
 
 		public override string GetAdjustmentDisplayName(string actionParameter, PluginImageSize imageSize) {
 			if (actionParameter == "layout")
-				return "Layout\n" + currentLayout.Name;
+				return "Grid\n" + currentLayout.Name;
 
 			else if (actionParameter == "hAdj")
-				return "Horizontal\n" + currentHorizontalAdjustment.Name;
+				return "<>\n" + currentHorizontalAdjustment.Name;
 
-			else if (actionParameter == "vAjd")
-				return "Vertical\n" + currentVerticalAdjustment.Name;
+			else if (actionParameter == "vAdj")
+				return "/\\ \\/\n" + currentVerticalAdjustment.Name;
+
+			else if (actionParameter == "oct")
+				return "Octave\n" + (octaveShift > 0 ? "+" : "") + octaveShift.ToString();
 
 			return null;
 		}
@@ -170,6 +188,7 @@ namespace Loupedeck.Loupedeck_DNLMIDIPlugin.Controls
 				return null;
 
 			var bb = new BitmapBuilder(imageSize);
+			bb.FillRectangle(0, 0, bb.Width, bb.Height, BitmapColor.Black);
 			bb.DrawText(GetCommandDisplayName(actionParameter, imageSize));
 			return bb.ToImage();
 		}
@@ -220,11 +239,11 @@ namespace Loupedeck.Loupedeck_DNLMIDIPlugin.Controls
 				return true;
 			}
 			else if (touchData.ContainsKey(ix)) {
-				if (touchEvent.DeltaX != 0)
+				if (touchEvent.DeltaX != 0 && currentHorizontalAdjustment.Adjust != null)
 					currentHorizontalAdjustment.Adjust(touchEvent.DeltaX);
 
-				if (touchEvent.DeltaY != 0)
-					currentVerticalAdjustment.Adjust(touchEvent.DeltaY);
+				if (touchEvent.DeltaY != 0 && currentVerticalAdjustment != null)
+					currentVerticalAdjustment.Adjust(-touchEvent.DeltaY);
 
 				return true;
 			}
@@ -244,18 +263,23 @@ namespace Loupedeck.Loupedeck_DNLMIDIPlugin.Controls
 			if (actionParameter == "layout") {
 				currentLayoutIx = mod(currentLayoutIx + encoderEvent.Clicks, layouts.Count);
 				currentLayout = layouts[currentLayoutIx];
-				ButtonActionNamesChanged();
-				EncoderActionNamesChanged();
+				CommandImageChanged(null);
+				AdjustmentImageChanged("layout");
 			}
 			else if (actionParameter == "hAdj") {
 				currentHorizontalAdjustmentIx = mod(currentHorizontalAdjustmentIx + encoderEvent.Clicks, adjustments.Count);
 				currentHorizontalAdjustment = adjustments[currentHorizontalAdjustmentIx];
-				EncoderActionNamesChanged();
+				AdjustmentImageChanged("hAdj");
 			}
 			else if (actionParameter == "vAdj") {
 				currentVerticalAdjustmentIx = mod(currentVerticalAdjustmentIx + encoderEvent.Clicks, adjustments.Count);
 				currentVerticalAdjustment = adjustments[currentVerticalAdjustmentIx];
-				EncoderActionNamesChanged();
+				AdjustmentImageChanged("vAdj");
+			}
+			else if(actionParameter == "oct") {
+				octaveShift += encoderEvent.Clicks;
+				CommandImageChanged(null);
+				AdjustmentImageChanged("oct");
 			}
 
 			return base.ProcessEncoderEvent(actionParameter, encoderEvent);
