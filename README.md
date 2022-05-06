@@ -8,6 +8,9 @@ A plugin for Loupedeck for MIDI support:
 * Made by Danol.
 * Uses Icons8.
 
+# How to set up
+![](etc/setup.png)
+
 ## TODO
 * Fader for selected channel
 * Time/position display
