@@ -1,7 +1,9 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Diagnostics;
 using System.Linq;
 using System.Windows;
+using System.Windows.Navigation;
 using Melanchall.DryWetMidi.Multimedia;
 
 namespace Loupedeck.Loupedeck_DNLMIDIPlugin
@@ -62,6 +64,11 @@ namespace Loupedeck.Loupedeck_DNLMIDIPlugin
 
 		private void mackieMidiOut_SelectionChanged(object sender, System.Windows.Controls.SelectionChangedEventArgs e) {
 			plugin.MackieMidiOutName = mackieMidiOut.SelectedItem as string;
+		}
+
+		private void openURL(object sender, RequestNavigateEventArgs e) {
+			Process.Start(new ProcessStartInfo(e.Uri.AbsoluteUri));
+			e.Handled = true;
 		}
 	}
 }

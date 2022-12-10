@@ -30,10 +30,10 @@
         <ComboBox x:Name="mackieMidiIn" VerticalAlignment="Center" Grid.Column="1" Grid.Row="2" SelectionChanged="mackieMidiIn_SelectionChanged"/>
         <ComboBox x:Name="mackieMidiOut" VerticalAlignment="Center" Grid.Column="1" Grid.Row="3" SelectionChanged="mackieMidiOut_SelectionChanged"/>
         <TextBlock Grid.Row="4" Grid.ColumnSpan="2" TextWrapping="Wrap">
-            For DAW control, usage of internal MIDI loopback software, such as <Hyperlink NavigateUri="https://www.tobias-erichsen.de/software/loopmidi.html">loopMIDI</Hyperlink> is needed.
+            For DAW control, usage of internal MIDI loopback software, such as <Hyperlink NavigateUri="https://www.tobias-erichsen.de/software/loopmidi.html" RequestNavigate="openURL">loopMIDI</Hyperlink> is needed.
         </TextBlock>
         <TextBlock Grid.Row="5" Grid.ColumnSpan="2" TextWrapping="Wrap">
-            For documentation and support, please visit the plugin <Hyperlink NavigateUri="https://github.com/CZDanol/loupedeck-dnlmidi">Github page</Hyperlink>.
+            For documentation and support, please visit the plugin <Hyperlink NavigateUri="https://github.com/CZDanol/loupedeck-dnlmidi" RequestNavigate="openURL">Github page</Hyperlink>.
         </TextBlock>
     </Grid>
 </Window>
