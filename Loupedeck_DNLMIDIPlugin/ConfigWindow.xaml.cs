@@ -20,6 +20,8 @@ namespace Loupedeck.Loupedeck_DNLMIDIPlugin
 
 			InitializeComponent();
 			UpdateDeviceList();
+
+			useBottomLCDRow.IsChecked = plugin.UseBottomLCDRow;
 		}
 
 		private void UpdateDeviceList() {
@@ -64,6 +66,10 @@ namespace Loupedeck.Loupedeck_DNLMIDIPlugin
 
 		private void mackieMidiOut_SelectionChanged(object sender, System.Windows.Controls.SelectionChangedEventArgs e) {
 			plugin.MackieMidiOutName = mackieMidiOut.SelectedItem as string;
+		}
+
+		private void useBottomLCDRow_CheckedChanged(object Sender, RoutedEventArgs e) {
+			plugin.UseBottomLCDRow = useBottomLCDRow.IsChecked ?? false;
 		}
 
 		private void openURL(object sender, RequestNavigateEventArgs e) {

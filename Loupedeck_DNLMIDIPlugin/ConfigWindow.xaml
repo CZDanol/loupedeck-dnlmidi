@@ -19,6 +19,7 @@
             <RowDefinition Height="auto"></RowDefinition>
             <RowDefinition Height="auto"></RowDefinition>
             <RowDefinition Height="auto"></RowDefinition>
+					<RowDefinition Height="auto"></RowDefinition>
             <RowDefinition Height="auto"></RowDefinition>
         </Grid.RowDefinitions>
         <Label HorizontalAlignment="Left">Receive from:</Label>
@@ -29,10 +30,11 @@
         <Label HorizontalAlignment="Left"  Grid.Row="3">Mackie Send to:</Label>
         <ComboBox x:Name="mackieMidiIn" VerticalAlignment="Center" Grid.Column="1" Grid.Row="2" SelectionChanged="mackieMidiIn_SelectionChanged"/>
         <ComboBox x:Name="mackieMidiOut" VerticalAlignment="Center" Grid.Column="1" Grid.Row="3" SelectionChanged="mackieMidiOut_SelectionChanged"/>
-        <TextBlock Grid.Row="4" Grid.ColumnSpan="2" TextWrapping="Wrap">
+			  <CheckBox Grid.Row="4" x:Name="useBottomLCDRow" Checked="useBottomLCDRow_CheckedChanged" Unchecked="useBottomLCDRow_CheckedChanged">Use bottom LCD row</CheckBox>
+        <TextBlock Grid.Row="5" Grid.ColumnSpan="2" TextWrapping="Wrap">
             For DAW control, usage of internal MIDI loopback software, such as <Hyperlink NavigateUri="https://www.tobias-erichsen.de/software/loopmidi.html" RequestNavigate="openURL">loopMIDI</Hyperlink> is needed.
         </TextBlock>
-        <TextBlock Grid.Row="5" Grid.ColumnSpan="2" TextWrapping="Wrap">
+        <TextBlock Grid.Row="6" Grid.ColumnSpan="2" TextWrapping="Wrap">
             For documentation and support, please visit the plugin <Hyperlink NavigateUri="https://github.com/CZDanol/loupedeck-dnlmidi" RequestNavigate="openURL">Github page</Hyperlink>.
         </TextBlock>
     </Grid>

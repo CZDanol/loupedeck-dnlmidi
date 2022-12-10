@@ -127,6 +127,19 @@ namespace Loupedeck.Loupedeck_DNLMIDIPlugin
 			}
 		}
 
+		bool useBottomLCDRow = false;
+		public bool UseBottomLCDRow {
+			get => useBottomLCDRow;
+			set {
+				if (useBottomLCDRow == value)
+					return;
+
+				useBottomLCDRow = value;
+				UpdateTrackNames();
+				SetPluginSetting("UseBottomLCDRow", value.ToString(), false);
+			}
+		}
+
 		public Loupedeck_DNLMIDIPlugin() {
 			// + 1 - last channel is master
 			for (int i = 0; i < MackieChannelCount + 1; i++)
@@ -177,6 +190,17 @@ namespace Loupedeck.Loupedeck_DNLMIDIPlugin
 		public override void ApplyAdjustment(String adjustmentName, String parameter, Int32 diff) {
 		}
 
+		public void UpdateTrackNames() {
+			for (int i = 0; i < MackieChannelCount; i++) {
+				MackieChannelData cd = mackieChannelData[i.ToString()];
+				string newTrackName = mackieDisplayData.Substring(7 * i + (useBottomLCDRow ? 56 : 0), 7);
+				if (!cd.TrackName.Equals(newTrackName))
+					cd.TrackName = newTrackName;
+			}
+
+			EmitMackieChannelDataChanged(null);
+		}
+
 		private async void LoadSettings() {
 			// Workaround - 
 			await Task.Delay(100);
@@ -192,6 +216,10 @@ namespace Loupedeck.Loupedeck_DNLMIDIPlugin
 
 			if (TryGetPluginSetting("MackieMidiOut", out mackieMidiOutName))
 				MackieMidiOutName = mackieMidiOutName;
+
+			String useBottomLCDRowStr;
+			if (TryGetPluginSetting("UseBottomLCDRow", out useBottomLCDRowStr))
+				UseBottomLCDRow = bool.Parse(useBottomLCDRowStr);
 		}
 
 		private void OnMackieMidiEvent(object sender, MidiEventReceivedEventArgs args) {
@@ -265,14 +293,7 @@ namespace Loupedeck.Loupedeck_DNLMIDIPlugin
 
 					mackieDisplayData = sb.ToString();
 
-					for (int i = 0; i < MackieChannelCount; i++) {
-						MackieChannelData cd = mackieChannelData[i.ToString()];
-						string newTrackName = mackieDisplayData.Substring(7 * i, 7);
-						if (!cd.TrackName.Equals(newTrackName))
-							cd.TrackName = newTrackName;
-					}
-
-					EmitMackieChannelDataChanged(null);
+					UpdateTrackNames();
 				}
 			}
 		}
