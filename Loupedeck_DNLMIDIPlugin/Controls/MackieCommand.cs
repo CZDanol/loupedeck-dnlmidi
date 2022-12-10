@@ -17,6 +17,7 @@ namespace Loupedeck.Loupedeck_DNLMIDIPlugin.Controls
 			public int Code;
 			public string Name;
 			public string IconName;
+			public string Group = "Mackie Control";
 
 			public bool Activated = false;
 
@@ -68,6 +69,14 @@ namespace Loupedeck.Loupedeck_DNLMIDIPlugin.Controls
 				IconName = "repeat",
 				OnColor = new BitmapColor(0, 57, 148),
 			});
+
+			for(int i = 0; i < 16; i++)
+				AddButton(new ButtonData
+				{
+					Code = 54 + i,
+					Name = "F" + (i + 1).ToString(),
+					Group = "Mackie F(1-16)"
+				});
 		}
 
 		protected override bool OnLoad() {
@@ -120,6 +129,8 @@ namespace Loupedeck.Loupedeck_DNLMIDIPlugin.Controls
 
 			if (bd.Icon != null)
 				bb.DrawImage(bd.Icon);
+			else
+				bb.DrawText(bd.Name, 0, 0, bb.Width, bb.Height, BitmapColor.White, 32, 16);
 
 			return bb.ToImage();
 		}
@@ -145,7 +156,7 @@ namespace Loupedeck.Loupedeck_DNLMIDIPlugin.Controls
 				bd.Icon = EmbeddedResources.ReadImage(EmbeddedResources.FindFile($"{bd.IconName}_52px.png"));
 
 			buttonData[bd.Code.ToString()] = bd;
-			AddParameter(bd.Code.ToString(), bd.Name, "Mackie control");
+			AddParameter(bd.Code.ToString(), bd.Name, bd.Group);
 		}
 
 	}
